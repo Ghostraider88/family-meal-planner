@@ -23,7 +23,6 @@ const User = sequelize.define('User', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
   },
   role: {
     type: DataTypes.ENUM('owner', 'member'),

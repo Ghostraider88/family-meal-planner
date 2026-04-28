@@ -8,6 +8,7 @@ import recipeRoutes from './routes/recipes.js';
 import mealRoutes from './routes/meals.js';
 import shoppingRoutes from './routes/shopping.js';
 import userRoutes from './routes/users.js';
+import inviteRoutes from './routes/invites.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/recipes', recipeRoutes);
 app.use('/api/meals', mealRoutes);
 app.use('/api/shopping', shoppingRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/invites', inviteRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

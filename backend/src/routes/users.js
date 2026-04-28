@@ -42,7 +42,32 @@ router.get('/family/members', async (req, res, next) => {
 
 router.post('/family/invite', async (req, res, next) => {
   try {
-    res.status(501).json({ message: 'Email invites coming in Phase 2' });
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    const { createInvite } = await import('../services/inviteService.js');
+    const invite = await createInvite(req.user.family_id, email, req.user.id);
+    res.status(201).json({ message: 'Invitation sent', invite });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/family/invites', async (req, res, next) => {
+  try {
+    const { getFamilyInvites } = await import('../services/inviteService.js');
+    const invites = await getFamilyInvites(req.user.family_id);
+    res.json(invites);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/family/invites/:id', async (req, res, next) => {
+  try {
+    const { cancelInvite } = await import('../services/inviteService.js');
+    await cancelInvite(req.params.id, req.user.family_id);
+    res.json({ message: 'Invite cancelled' });
   } catch (err) {
     next(err);
   }

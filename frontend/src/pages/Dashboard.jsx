@@ -49,11 +49,11 @@ const Dashboard = () => {
               <p>Einkaufslisten verwalten</p>
             </Link>
 
-            <div className="action-card disabled">
-              <span className="action-icon">📥</span>
-              <h3>Importieren</h3>
-              <p>Phase 2</p>
-            </div>
+            <Link to="/family" className="action-card">
+              <span className="action-icon">👨‍👩‍👧‍👦</span>
+              <h3>Familie</h3>
+              <p>Mitglieder verwalten</p>
+            </Link>
           </div>
         </section>
       </div>

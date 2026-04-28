@@ -1,0 +1,204 @@
+.family-page {
+  min-height: 100vh;
+  background-color: #F0F2F9;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  color: #003457;
+  font-size: 24px;
+  margin: 0;
+}
+
+.family-section {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+}
+
+.family-section h2 {
+  color: #003457;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.empty {
+  color: #8B91A3;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 16px;
+}
+
+.members-list,
+.invites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-card,
+.invite-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #E3E6EF;
+  border-radius: 8px;
+  transition: all 200ms ease;
+}
+
+.member-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.member-info {
+  flex: 1;
+}
+
+.member-card h3 {
+  margin: 0 0 4px 0;
+  color: #003457;
+  font-size: 16px;
+}
+
+.member-card p {
+  margin: 0;
+  color: #8B91A3;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.badge.owner {
+  background-color: #550AA8;
+  color: white;
+}
+
+.badge.member {
+  background-color: #D4EDFC;
+  color: #003457;
+}
+
+.btn-danger {
+  padding: 8px 12px;
+  background-color: #FF0048;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 200ms ease;
+}
+
+.btn-danger:hover {
+  background-color: #E60041;
+  transform: translateY(-2px);
+}
+
+.btn-link {
+  padding: 8px 12px;
+  background: none;
+  color: #00C5FF;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: all 200ms ease;
+}
+
+.btn-link:hover {
+  color: #00A8D8;
+}
+
+.invite-info {
+  flex: 1;
+}
+
+.invite-email {
+  margin: 0;
+  color: #403E4E;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.invite-meta {
+  margin: 4px 0 0 0;
+  color: #8B91A3;
+  font-size: 12px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  z-index: 2000;
+  animation: slideIn 200ms ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-success {
+  background-color: #3DB384;
+  color: white;
+}
+
+.notification-error {
+  background-color: #FF0048;
+  color: white;
+}
+
+.notification-info {
+  background-color: #00C5FF;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .family-section {
+    padding: 20px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .member-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .notification {
+    right: 10px;
+    left: 10px;
+    top: 10px;
+  }
+}

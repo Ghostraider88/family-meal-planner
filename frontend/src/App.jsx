@@ -8,6 +8,7 @@ import RecipesPage from './pages/RecipesPage';
 import RecipeDetail from './pages/RecipeDetail';
 import MealPlanner from './pages/MealPlanner';
 import ShoppingPage from './pages/ShoppingPage';
+import FamilyPage from './pages/FamilyPage';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/recipes/:id" element={<RecipeDetail />} />
           <Route path="/week" element={<MealPlanner />} />
           <Route path="/shopping" element={<ShoppingPage />} />
+          <Route path="/family" element={<FamilyPage />} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </>

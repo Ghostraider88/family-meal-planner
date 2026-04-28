@@ -5,6 +5,7 @@ import MealPlan from './MealPlan.js';
 import ShoppingList from './ShoppingList.js';
 import ShoppingItem from './ShoppingItem.js';
 import AuditLog from './AuditLog.js';
+import FamilyInvite from './FamilyInvite.js';
 
 // Associations
 User.belongsTo(Family, { foreignKey: 'family_id' });
@@ -29,4 +30,8 @@ ShoppingList.hasMany(ShoppingItem, { foreignKey: 'list_id' });
 AuditLog.belongsTo(Family, { foreignKey: 'family_id' });
 Family.hasMany(AuditLog, { foreignKey: 'family_id' });
 
-export { User, Family, Recipe, MealPlan, ShoppingList, ShoppingItem, AuditLog };
+FamilyInvite.belongsTo(Family, { foreignKey: 'family_id' });
+FamilyInvite.belongsTo(User, { foreignKey: 'invited_by' });
+Family.hasMany(FamilyInvite, { foreignKey: 'family_id' });
+
+export { User, Family, Recipe, MealPlan, ShoppingList, ShoppingItem, AuditLog, FamilyInvite };

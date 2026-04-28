@@ -9,7 +9,6 @@ const MealPlan = sequelize.define('MealPlan', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
   },
   date: {
     type: DataTypes.DATEONLY,
@@ -21,7 +20,6 @@ const MealPlan = sequelize.define('MealPlan', {
   },
   recipe_id: {
     type: DataTypes.UUID,
-    references: { model: 'Recipes', key: 'id' },
   },
   custom_name: {
     type: DataTypes.STRING,
@@ -31,7 +29,6 @@ const MealPlan = sequelize.define('MealPlan', {
   },
   created_by: {
     type: DataTypes.UUID,
-    references: { model: 'Users', key: 'id' },
   },
 }, { tableName: 'meal_plans' });
 

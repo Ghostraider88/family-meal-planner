@@ -9,7 +9,6 @@ const ShoppingItem = sequelize.define('ShoppingItem', {
   },
   list_id: {
     type: DataTypes.UUID,
-    references: { model: 'ShoppingLists', key: 'id', onDelete: 'CASCADE' },
   },
   name: {
     type: DataTypes.STRING,

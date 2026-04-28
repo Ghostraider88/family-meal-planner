@@ -9,7 +9,6 @@ const Recipe = sequelize.define('Recipe', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
   },
   name: {
     type: DataTypes.STRING,

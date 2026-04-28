@@ -60,10 +60,14 @@ export const acceptInvite = async (token, userEmail) => {
   let user = await User.findOne({ where: { email: userEmail } });
 
   if (!user) {
+    // New user via invite: mark account as invite-only (no password set yet)
+    // They must register properly or use a password-reset flow before logging in
+    const crypto = await import('crypto');
+    const unusableHash = '$invite$' + crypto.default.randomBytes(16).toString('hex');
     user = await User.create({
       id: uuidv4(),
       email: userEmail,
-      password_hash: '',
+      password_hash: unusableHash,
       name: userEmail.split('@')[0],
       family_id: invite.family_id,
       role: 'member',

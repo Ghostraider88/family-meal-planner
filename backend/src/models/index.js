@@ -31,7 +31,7 @@ AuditLog.belongsTo(Family, { foreignKey: 'family_id' });
 Family.hasMany(AuditLog, { foreignKey: 'family_id' });
 
 FamilyInvite.belongsTo(Family, { foreignKey: 'family_id' });
-FamilyInvite.belongsTo(User, { foreignKey: 'invited_by' });
+FamilyInvite.belongsTo(User, { foreignKey: 'invited_by', as: 'InvitedBy' });
 Family.hasMany(FamilyInvite, { foreignKey: 'family_id' });
 
 export { User, Family, Recipe, MealPlan, ShoppingList, ShoppingItem, AuditLog, FamilyInvite };

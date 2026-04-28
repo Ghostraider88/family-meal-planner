@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerUser, loginUser, refreshToken } from '../services/authService.js';
+import { registerUser, loginUser, refreshUserToken } from '../services/authService.js';
 
 const router = express.Router();
 
@@ -12,6 +12,9 @@ router.post('/register', async (req, res, next) => {
     const result = await registerUser(email, password, name);
     res.status(201).json(result);
   } catch (err) {
+    if (err.message === 'Email already exists') {
+      return res.status(409).json({ error: err.message });
+    }
     next(err);
   }
 });
@@ -25,18 +28,21 @@ router.post('/login', async (req, res, next) => {
     const result = await loginUser(email, password);
     res.json(result);
   } catch (err) {
+    if (err.message === 'Invalid email or password') {
+      return res.status(401).json({ error: err.message });
+    }
     next(err);
   }
 });
 
-router.post('/refresh', (req, res, next) => {
+router.post('/refresh', async (req, res, next) => {
   try {
-    const { refreshToken: token } = req.body;
-    if (!token) return res.status(400).json({ error: 'No refresh token' });
-    const newToken = refreshToken(token);
-    res.json({ token: newToken });
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ error: 'No refresh token' });
+    const token = refreshUserToken(refreshToken);
+    res.json({ token });
   } catch (err) {
-    next(err);
+    res.status(401).json({ error: 'Invalid refresh token' });
   }
 });
 

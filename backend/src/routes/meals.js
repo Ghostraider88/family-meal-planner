@@ -20,8 +20,15 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const { date, meal_type, recipe_id, custom_name, for_people } = req.body;
+    const VALID_MEAL_TYPES = ['breakfast', 'lunch', 'snack', 'dinner'];
     if (!date || !meal_type) {
       return res.status(400).json({ error: 'Date and meal_type required' });
+    }
+    if (!VALID_MEAL_TYPES.includes(meal_type)) {
+      return res.status(400).json({ error: `meal_type must be one of: ${VALID_MEAL_TYPES.join(', ')}` });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(Date.parse(date))) {
+      return res.status(400).json({ error: 'date must be a valid YYYY-MM-DD date' });
     }
 
     const meal = await MealPlan.create({

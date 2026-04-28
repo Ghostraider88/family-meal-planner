@@ -1,0 +1,16 @@
+{
+  "name": "family-meal-planner",
+  "version": "1.0.0",
+  "description": "Family Meal Planner App with Shopping Lists",
+  "main": "backend/src/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "cd backend && node --watch src/app.js",
+    "start": "cd backend && node src/app.js",
+    "build": "echo 'Build steps here'",
+    "test": "echo 'Tests coming soon'"
+  },
+  "keywords": ["meal-planning", "shopping", "family"],
+  "author": "Claude Code",
+  "license": "MIT"
+}

@@ -83,6 +83,11 @@ const RecipeDetail = () => {
       <div style={styles.content}>
         {/* Recipe Header */}
         <div style={styles.recipeHeader}>
+          {recipe.images && recipe.images.length > 0 && (
+            <div style={styles.imageCarousel}>
+              <img src={recipe.images[0]} alt={recipe.name} style={styles.headerImage} />
+            </div>
+          )}
           <div style={styles.recipeEmoji}>🍽️</div>
           <h2 style={styles.recipeName}>{recipe.name}</h2>
 
@@ -118,36 +123,43 @@ const RecipeDetail = () => {
           <section style={styles.section}>
             <h3 style={styles.sectionTitle}>📦 Zutaten</h3>
             <div style={styles.ingredientsList}>
-              {recipe.ingredients.map((ingredient, idx) => (
-                <div key={idx} style={styles.ingredientItem}>
-                  <input
-                    type="checkbox"
-                    checked={checkedIngredients[idx] || false}
-                    onChange={(e) => setCheckedIngredients({
-                      ...checkedIngredients,
-                      [idx]: e.target.checked
-                    })}
-                    style={styles.checkbox}
-                  />
-                  <div style={styles.ingredientContent}>
-                    <span style={{
-                      ...styles.ingredientName,
-                      ...(checkedIngredients[idx] ? styles.checkedIngredient : {}),
-                    }}>
-                      {typeof ingredient === 'string' ? ingredient : ingredient.name || JSON.stringify(ingredient)}
-                    </span>
+              {recipe.ingredients.map((ingredient, idx) => {
+                const isString = typeof ingredient === 'string';
+                const name = isString ? ingredient : ingredient.name || '';
+                const quantity = !isString && ingredient.quantity ? ingredient.quantity : '';
+                const unit = !isString && ingredient.unit ? ingredient.unit : '';
+
+                return (
+                  <div key={idx} style={styles.ingredientItem}>
+                    <input
+                      type="checkbox"
+                      checked={checkedIngredients[idx] || false}
+                      onChange={(e) => setCheckedIngredients({
+                        ...checkedIngredients,
+                        [idx]: e.target.checked
+                      })}
+                      style={styles.checkbox}
+                    />
+                    <div style={styles.ingredientContent}>
+                      <span style={{
+                        ...styles.ingredientName,
+                        ...(checkedIngredients[idx] ? styles.checkedIngredient : {}),
+                      }}>
+                        {name}
+                        {quantity && <span> - {quantity}</span>}
+                        {unit && <span> {unit}</span>}
+                      </span>
+                    </div>
+                    <button
+                      style={styles.addToListBtn}
+                      onClick={() => handleAddToShoppingList({ name, quantity, unit })}
+                      title="Zur Einkaufsliste"
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    style={styles.addToListBtn}
-                    onClick={() => handleAddToShoppingList(
-                      typeof ingredient === 'string' ? { name: ingredient } : ingredient
-                    )}
-                    title="Zur Einkaufsliste"
-                  >
-                    +
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
@@ -229,10 +241,23 @@ const styles = {
   recipeHeader: {
     backgroundColor: 'white',
     borderRadius: '12px',
-    padding: '24px 16px',
+    overflow: 'hidden',
     marginBottom: '20px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
     textAlign: 'center',
+  },
+  imageCarousel: {
+    width: '100%',
+    height: '240px',
+    backgroundColor: '#F0F2F9',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   recipeEmoji: {
     fontSize: '56px',

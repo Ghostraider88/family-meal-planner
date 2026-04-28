@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
   const [formData, setFormData] = useState(initialRecipe || {
@@ -10,20 +10,70 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
     instructions: [],
     tags: [],
     source: '',
+    images: [],
   });
 
-  const [ingredientInput, setIngredientInput] = useState('');
+  const [ingredientInput, setIngredientInput] = useState({ name: '', quantity: '', unit: '' });
   const [instructionInput, setInstructionInput] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [error, setError] = useState('');
+  const [imagePreview, setImagePreview] = useState(initialRecipe?.images || []);
 
-  const handleAddIngredient = () => {
-    if (!ingredientInput.trim()) return;
+  const ingredientNameRef = useRef(null);
+  const ingredientQuantityRef = useRef(null);
+  const ingredientUnitRef = useRef(null);
+  const instructionRef = useRef(null);
+
+  // Handle image upload (file or camera)
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target.result;
+        setFormData({
+          ...formData,
+          images: [...formData.images, base64],
+        });
+        setImagePreview([...imagePreview, base64]);
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setError('Fehler beim Laden des Bildes');
+    }
+  };
+
+  const handleRemoveImage = (idx) => {
     setFormData({
       ...formData,
-      ingredients: [...formData.ingredients, ingredientInput.trim()],
+      images: formData.images.filter((_, i) => i !== idx),
     });
-    setIngredientInput('');
+    setImagePreview(imagePreview.filter((_, i) => i !== idx));
+  };
+
+  // Handle ingredient with auto-focus
+  const handleAddIngredient = () => {
+    if (!ingredientInput.name.trim()) {
+      setError('Zutat erforderlich');
+      return;
+    }
+
+    const newIngredient = {
+      name: ingredientInput.name.trim(),
+      quantity: ingredientInput.quantity || '',
+      unit: ingredientInput.unit || '',
+    };
+
+    setFormData({
+      ...formData,
+      ingredients: [...formData.ingredients, newIngredient],
+    });
+
+    setIngredientInput({ name: '', quantity: '', unit: '' });
+    setError('');
+
+    setTimeout(() => ingredientNameRef.current?.focus(), 0);
   };
 
   const handleRemoveIngredient = (idx) => {
@@ -33,13 +83,22 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
     });
   };
 
+  // Handle instruction with auto-focus
   const handleAddInstruction = () => {
-    if (!instructionInput.trim()) return;
+    if (!instructionInput.trim()) {
+      setError('Schritt erforderlich');
+      return;
+    }
+
     setFormData({
       ...formData,
       instructions: [...formData.instructions, instructionInput.trim()],
     });
+
     setInstructionInput('');
+    setError('');
+
+    setTimeout(() => instructionRef.current?.focus(), 0);
   };
 
   const handleRemoveInstruction = (idx) => {
@@ -93,6 +152,47 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
 
         <div style={styles.content}>
           {error && <div style={styles.error}>{error}</div>}
+
+          {/* Images Section */}
+          <div style={styles.section}>
+            <label style={styles.label}>📷 Bilder</label>
+            <div style={styles.imageInputRow}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                style={{ display: 'none' }}
+                id="file-upload"
+              />
+              <label htmlFor="file-upload" style={styles.fileBtn}>📁 Datei</label>
+
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                style={{ display: 'none' }}
+                id="camera-upload"
+              />
+              <label htmlFor="camera-upload" style={styles.fileBtn}>📷 Kamera</label>
+            </div>
+
+            {imagePreview.length > 0 && (
+              <div style={styles.imageGrid}>
+                {imagePreview.map((img, i) => (
+                  <div key={i} style={styles.imageContainer}>
+                    <img src={img} alt={`Rezept ${i + 1}`} style={styles.imageThumbnail} />
+                    <button
+                      style={styles.imageDeleteBtn}
+                      onClick={() => handleRemoveImage(i)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Basic Info */}
           <div style={styles.section}>
@@ -156,14 +256,14 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
 
           {/* Tags */}
           <div style={styles.section}>
-            <label style={styles.label}>Tags</label>
+            <label style={styles.label}>🏷️ Tags</label>
             <div style={styles.tagInputRow}>
               <input
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
-                placeholder="z.B. vegetarisch, schnell, glutenfrei"
+                placeholder="z.B. vegetarisch"
                 style={styles.input}
               />
               <button style={styles.addTagBtn} onClick={handleAddTag}>+</button>
@@ -185,25 +285,49 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
             )}
           </div>
 
-          {/* Ingredients */}
+          {/* Ingredients with Quantity */}
           <div style={styles.section}>
-            <label style={styles.label}>Zutaten</label>
-            <div style={styles.tagInputRow}>
+            <label style={styles.label}>📦 Zutaten</label>
+            <div style={styles.ingredientInputs}>
               <input
+                ref={ingredientNameRef}
                 type="text"
-                value={ingredientInput}
-                onChange={(e) => setIngredientInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddIngredient()}
-                placeholder="z.B. 500g Mehl"
-                style={styles.input}
+                value={ingredientInput.name}
+                onChange={(e) => setIngredientInput({ ...ingredientInput, name: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && ingredientQuantityRef.current?.focus()}
+                placeholder="Zutat"
+                style={styles.ingredientNameInput}
               />
-              <button style={styles.addTagBtn} onClick={handleAddIngredient}>+</button>
+              <input
+                ref={ingredientQuantityRef}
+                type="text"
+                value={ingredientInput.quantity}
+                onChange={(e) => setIngredientInput({ ...ingredientInput, quantity: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && ingredientUnitRef.current?.focus()}
+                placeholder="Menge"
+                style={styles.ingredientQuantityInput}
+              />
+              <input
+                ref={ingredientUnitRef}
+                type="text"
+                value={ingredientInput.unit}
+                onChange={(e) => setIngredientInput({ ...ingredientInput, unit: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddIngredient()}
+                placeholder="Einheit"
+                style={styles.ingredientUnitInput}
+              />
+              <button style={styles.addIngrBtn} onClick={handleAddIngredient}>+</button>
             </div>
+
             {formData.ingredients.length > 0 && (
               <div style={styles.ingredientsList}>
                 {formData.ingredients.map((ing, i) => (
                   <div key={i} style={styles.ingredientItem}>
-                    <span>{ing}</span>
+                    <span>
+                      <strong>{ing.name}</strong>
+                      {ing.quantity && <span> - {ing.quantity}</span>}
+                      {ing.unit && <span> {ing.unit}</span>}
+                    </span>
                     <button
                       style={styles.removeTagBtn}
                       onClick={() => handleRemoveIngredient(i)}
@@ -218,17 +342,21 @@ const RecipeEditor = ({ onSave, onClose, initialRecipe = null }) => {
 
           {/* Instructions */}
           <div style={styles.section}>
-            <label style={styles.label}>Anleitung</label>
-            <textarea
-              value={instructionInput}
-              onChange={(e) => setInstructionInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && e.ctrlKey && handleAddInstruction()}
-              placeholder="Schritt eingeben (Ctrl+Enter zum Hinzufügen)"
-              style={styles.textarea}
-            />
-            <button style={styles.addInstructionBtn} onClick={handleAddInstruction}>
-              Schritt hinzufügen
-            </button>
+            <label style={styles.label}>👨‍🍳 Anleitung</label>
+            <div style={styles.instructionInputRow}>
+              <textarea
+                ref={instructionRef}
+                value={instructionInput}
+                onChange={(e) => setInstructionInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && e.ctrlKey && handleAddInstruction()}
+                placeholder="Schritt eingeben (Ctrl+Enter zum Speichern)"
+                style={styles.textarea}
+              />
+              <button style={styles.addInstructionBtn} onClick={handleAddInstruction}>
+                Schritt hinzufügen
+              </button>
+            </div>
+
             {formData.instructions.length > 0 && (
               <div style={styles.instructionsList}>
                 {formData.instructions.map((inst, i) => (
@@ -346,6 +474,57 @@ const styles = {
     minHeight: '80px',
     resize: 'vertical',
   },
+
+  imageInputRow: {
+    display: 'flex',
+    gap: '8px',
+  },
+  fileBtn: {
+    flex: 1,
+    padding: '10px 12px',
+    backgroundColor: '#00C5FF',
+    color: 'white',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    textAlign: 'center',
+    border: 'none',
+  },
+  imageGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+    gap: '8px',
+    marginTop: '8px',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    paddingBottom: '100%',
+  },
+  imageThumbnail: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    borderRadius: '6px',
+  },
+  imageDeleteBtn: {
+    position: 'absolute',
+    top: '-8px',
+    right: '-8px',
+    width: '24px',
+    height: '24px',
+    borderRadius: '50%',
+    backgroundColor: '#FF0048',
+    color: 'white',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+
   tagInputRow: {
     display: 'flex',
     gap: '8px',
@@ -386,6 +565,44 @@ const styles = {
     width: '16px',
     height: '16px',
   },
+
+  ingredientInputs: {
+    display: 'grid',
+    gridTemplateColumns: '2fr 1fr 1fr auto',
+    gap: '8px',
+    alignItems: 'end',
+  },
+  ingredientNameInput: {
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: '1px solid #E3E6EF',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+  },
+  ingredientQuantityInput: {
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: '1px solid #E3E6EF',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+  },
+  ingredientUnitInput: {
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: '1px solid #E3E6EF',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+  },
+  addIngrBtn: {
+    backgroundColor: '#00C5FF',
+    color: 'white',
+    border: 'none',
+    padding: '10px 16px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    fontSize: '14px',
+  },
   ingredientsList: {
     display: 'flex',
     flexDirection: 'column',
@@ -394,13 +611,18 @@ const styles = {
   },
   ingredientItem: {
     display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justify: 'space-between',
-    gap: '8px',
     padding: '8px 12px',
     backgroundColor: '#F0F2F9',
     borderRadius: '6px',
     fontSize: '14px',
+  },
+
+  instructionInputRow: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
   },
   addInstructionBtn: {
     backgroundColor: '#00C5FF',
@@ -411,7 +633,6 @@ const styles = {
     cursor: 'pointer',
     fontWeight: '600',
     fontSize: '14px',
-    marginTop: '8px',
   },
   instructionsList: {
     display: 'flex',
@@ -433,6 +654,7 @@ const styles = {
     color: '#00C5FF',
     minWidth: '20px',
   },
+
   footer: {
     display: 'flex',
     gap: '8px',

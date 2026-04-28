@@ -38,6 +38,11 @@ const Recipe = sequelize.define('Recipe', {
   source: {
     type: DataTypes.STRING,
   },
+  images: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+    comment: 'Array of base64-encoded images or image URLs',
+  },
 }, { tableName: 'recipes' });
 
 export default Recipe;

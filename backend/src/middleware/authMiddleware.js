@@ -1,12 +1,13 @@
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET || JWT_SECRET === 'your-secret' || JWT_SECRET === 'your-super-secret-jwt-key-change-in-production') {
+const INSECURE_SECRETS = new Set(['your-secret', 'your-super-secret-jwt-key-change-in-production']);
+if (!JWT_SECRET || INSECURE_SECRETS.has(JWT_SECRET)) {
   if (process.env.NODE_ENV === 'production') {
-    console.error('FATAL: JWT_SECRET is not set or is using default value in production!');
+    console.error('FATAL: JWT_SECRET is not set or is using a known-insecure default value in production!');
     process.exit(1);
   } else {
-    console.warn('WARNING: Using insecure default JWT_SECRET. Set JWT_SECRET in .env for production.');
+    console.warn('WARNING: JWT_SECRET is weak or missing. Replace before deploying to production.');
   }
 }
 

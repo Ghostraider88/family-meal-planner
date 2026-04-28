@@ -48,6 +48,12 @@ services:
         condition: service_healthy
     volumes:
       - ./backend/src:/app/src
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   frontend:
     build:
@@ -60,7 +66,8 @@ services:
     ports:
       - "3029:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     volumes:
       - ./frontend/src:/app/src
 

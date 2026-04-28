@@ -1,17 +1,20 @@
 node_modules/
 dist/
 build/
+coverage/
+.nyc_output/
+
+# Environment files — never commit secrets
 .env
 .env.local
 .env.*.local
+backend/.env
+frontend/.env
+
+# Editor/OS artifacts
 *.log
 *.swp
 *.swo
 .DS_Store
 .idea/
 .vscode/
-.env
-backend/.env
-frontend/.env
-coverage/
-.nyc_output/

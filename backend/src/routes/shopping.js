@@ -6,12 +6,25 @@ import { ShoppingList, ShoppingItem } from '../models/index.js';
 const router = express.Router();
 router.use(authenticate);
 
+// Verify item belongs to the authenticated user's family — prevents IDOR
+const getItemWithOwnershipCheck = async (itemId, familyId) => {
+  const item = await ShoppingItem.findOne({
+    where: { id: itemId },
+    include: [{
+      model: ShoppingList,
+      where: { family_id: familyId },
+      required: true,
+    }],
+  });
+  return item;
+};
+
 // Shopping Lists
 router.get('/lists', async (req, res, next) => {
   try {
     const lists = await ShoppingList.findAll({
       where: { family_id: req.user.family_id },
-      include: [{ model: ShoppingItem }],
+      include: [{ model: ShoppingItem, order: [['item_order', 'ASC']] }],
     });
     res.json(lists);
   } catch (err) {
@@ -22,13 +35,15 @@ router.get('/lists', async (req, res, next) => {
 router.post('/lists', async (req, res, next) => {
   try {
     const { name, store } = req.body;
-    if (!name) return res.status(400).json({ error: 'Name required' });
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ error: 'Name required' });
+    }
 
     const list = await ShoppingList.create({
       id: uuidv4(),
       family_id: req.user.family_id,
-      name,
-      store: store || null,
+      name: name.trim(),
+      store: store?.trim() || null,
       created_by: req.user.id,
     });
     res.status(201).json(list);
@@ -41,7 +56,7 @@ router.get('/lists/:id', async (req, res, next) => {
   try {
     const list = await ShoppingList.findOne({
       where: { id: req.params.id, family_id: req.user.family_id },
-      include: [{ model: ShoppingItem }],
+      include: [{ model: ShoppingItem, order: [['item_order', 'ASC']] }],
     });
     if (!list) return res.status(404).json({ error: 'List not found' });
     res.json(list);
@@ -59,9 +74,9 @@ router.put('/lists/:id', async (req, res, next) => {
     if (!list) return res.status(404).json({ error: 'List not found' });
 
     await list.update({
-      name: name || list.name,
-      store: store !== undefined ? store : list.store,
-      store_mode: store_mode !== undefined ? store_mode : list.store_mode,
+      name: name?.trim() || list.name,
+      store: store !== undefined ? store?.trim() || null : list.store,
+      store_mode: store_mode !== undefined ? Boolean(store_mode) : list.store_mode,
     });
     res.json(list);
   } catch (err) {
@@ -102,18 +117,27 @@ router.get('/lists/:list_id/items', async (req, res, next) => {
 
 router.post('/lists/:list_id/items', async (req, res, next) => {
   try {
+    const list = await ShoppingList.findOne({
+      where: { id: req.params.list_id, family_id: req.user.family_id },
+    });
+    if (!list) return res.status(404).json({ error: 'List not found' });
+
     const { name, quantity, unit, category, price } = req.body;
-    if (!name) return res.status(400).json({ error: 'Name required' });
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ error: 'Name required' });
+    }
+
+    const maxOrder = await ShoppingItem.max('item_order', { where: { list_id: req.params.list_id } });
 
     const item = await ShoppingItem.create({
       id: uuidv4(),
       list_id: req.params.list_id,
-      name,
-      quantity: quantity || null,
-      unit: unit || null,
-      category: category || null,
-      price: price || null,
-      item_order: 0,
+      name: name.trim(),
+      quantity: quantity !== undefined ? parseFloat(quantity) || null : null,
+      unit: unit?.trim() || null,
+      category: category?.trim() || null,
+      price: price !== undefined ? parseFloat(price) || null : null,
+      item_order: (maxOrder || 0) + 1,
     });
     res.status(201).json(item);
   } catch (err) {
@@ -123,15 +147,18 @@ router.post('/lists/:list_id/items', async (req, res, next) => {
 
 router.put('/items/:id', async (req, res, next) => {
   try {
-    const { quantity, unit, checked, item_order } = req.body;
-    const item = await ShoppingItem.findByPk(req.params.id);
+    // Ownership check: item must belong to a list owned by this family
+    const item = await getItemWithOwnershipCheck(req.params.id, req.user.family_id);
     if (!item) return res.status(404).json({ error: 'Item not found' });
 
+    const { name, quantity, unit, category, checked, item_order } = req.body;
     await item.update({
-      quantity: quantity !== undefined ? quantity : item.quantity,
-      unit: unit !== undefined ? unit : item.unit,
-      checked: checked !== undefined ? checked : item.checked,
-      item_order: item_order !== undefined ? item_order : item.item_order,
+      name: name?.trim() ?? item.name,
+      quantity: quantity !== undefined ? parseFloat(quantity) || null : item.quantity,
+      unit: unit !== undefined ? unit?.trim() || null : item.unit,
+      category: category !== undefined ? category?.trim() || null : item.category,
+      checked: checked !== undefined ? Boolean(checked) : item.checked,
+      item_order: item_order !== undefined ? parseInt(item_order) : item.item_order,
     });
     res.json(item);
   } catch (err) {
@@ -141,8 +168,10 @@ router.put('/items/:id', async (req, res, next) => {
 
 router.delete('/items/:id', async (req, res, next) => {
   try {
-    const item = await ShoppingItem.findByPk(req.params.id);
+    // Ownership check: item must belong to a list owned by this family
+    const item = await getItemWithOwnershipCheck(req.params.id, req.user.family_id);
     if (!item) return res.status(404).json({ error: 'Item not found' });
+
     await item.destroy();
     res.json({ message: 'Item deleted' });
   } catch (err) {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext();
 
@@ -6,6 +6,28 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(!!localStorage.getItem('token'));
+
+  // On mount: if a stored token exists, fetch the current user to rehydrate state
+  useEffect(() => {
+    if (!token) {
+      setInitializing(false);
+      return;
+    }
+    fetch('/api/users/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Token invalid');
+        return res.json();
+      })
+      .then((data) => setUser(data))
+      .catch(() => {
+        localStorage.removeItem('token');
+        setToken(null);
+      })
+      .finally(() => setInitializing(false));
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -15,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const register = async (email, password, name) => {
+  const register = useCallback(async (email, password, name) => {
     setLoading(true);
     try {
       const res = await fetch('/api/auth/register', {
@@ -28,15 +50,12 @@ export const AuthProvider = ({ children }) => {
       setToken(data.token);
       setUser(data.user);
       return data;
-    } catch (err) {
-      console.error(err);
-      throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
       const res = await fetch('/api/auth/login', {
@@ -49,18 +68,18 @@ export const AuthProvider = ({ children }) => {
       setToken(data.token);
       setUser(data.user);
       return data;
-    } catch (err) {
-      console.error(err);
-      throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
-  };
+  }, []);
+
+  // Prevent flash of login screen while token is being validated
+  if (initializing) return null;
 
   return (
     <AuthContext.Provider value={{ user, token, loading, register, login, logout }}>

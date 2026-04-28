@@ -31,17 +31,23 @@ services:
       DB_NAME: family_meal_planner
       DB_USER: planner_user
       DB_PASSWORD: secure_password_123
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production
-      JWT_REFRESH_SECRET: your-super-secret-refresh-key
-      CORS_ORIGIN: http://localhost:3000
+      # Change these secrets before production deployment
+      JWT_SECRET: dev-jwt-secret-replace-before-production-use
+      JWT_REFRESH_SECRET: dev-refresh-secret-replace-before-production-use
+      JWT_EXPIRES_IN: 24h
+      JWT_REFRESH_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3029
+      FRONTEND_URL: http://localhost:3029
+      SMTP_SERVICE: gmail
+      SMTP_USER: your-email@gmail.com
+      SMTP_PASSWORD: your-app-password
     ports:
-      - "3001:3001"
+      - "3030:3001"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       - ./backend/src:/app/src
-    command: npm run dev
 
   frontend:
     build:
@@ -49,9 +55,10 @@ services:
       dockerfile: Dockerfile
     container_name: family-meal-planner-ui
     environment:
-      VITE_API_URL: http://localhost:3001
+      # Used by vite.config.js at startup to set the proxy target
+      VITE_API_URL: http://backend:3001
     ports:
-      - "3000:3000"
+      - "3029:3000"
     depends_on:
       - backend
     volumes:

@@ -18,17 +18,26 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const { name, time_minutes, servings, difficulty, ingredients, instructions, tags, source } = req.body;
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ error: 'Recipe name required' });
+    }
+    if (ingredients !== undefined && !Array.isArray(ingredients)) {
+      return res.status(400).json({ error: 'Ingredients must be an array' });
+    }
+    if (instructions !== undefined && !Array.isArray(instructions)) {
+      return res.status(400).json({ error: 'Instructions must be an array' });
+    }
     const recipe = await Recipe.create({
       id: uuidv4(),
       family_id: req.user.family_id,
-      name,
-      time_minutes,
-      servings,
-      difficulty,
+      name: name.trim(),
+      time_minutes: time_minutes ? parseInt(time_minutes) : null,
+      servings: servings ? parseInt(servings) : null,
+      difficulty: difficulty || null,
       ingredients: ingredients || [],
       instructions: instructions || [],
-      tags: tags || [],
-      source,
+      tags: Array.isArray(tags) ? tags : [],
+      source: source?.trim() || null,
     });
     res.status(201).json(recipe);
   } catch (err) {

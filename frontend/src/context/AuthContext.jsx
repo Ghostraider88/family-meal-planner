@@ -37,6 +37,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  const parseResponse = async (res) => {
+    const text = await res.text();
+    if (!text) throw new Error('Server nicht erreichbar (leere Antwort)');
+    try {
+      return JSON.parse(text);
+    } catch {
+      console.error('Non-JSON response:', text.slice(0, 200));
+      throw new Error('Server nicht erreichbar – bitte Backend-Logs prüfen');
+    }
+  };
+
   const register = useCallback(async (email, password, name) => {
     setLoading(true);
     try {
@@ -45,8 +56,8 @@ export const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = await parseResponse(res);
+      if (!res.ok) throw new Error(data.error || 'Registrierung fehlgeschlagen');
       setToken(data.token);
       setUser(data.user);
       return data;
@@ -63,8 +74,8 @@ export const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = await parseResponse(res);
+      if (!res.ok) throw new Error(data.error || 'Login fehlgeschlagen');
       setToken(data.token);
       setUser(data.user);
       return data;

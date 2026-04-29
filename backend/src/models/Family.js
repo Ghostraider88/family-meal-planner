@@ -13,7 +13,6 @@ const Family = sequelize.define('Family', {
   },
   owner_id: {
     type: DataTypes.UUID,
-    references: { model: 'Users', key: 'id' },
   },
 }, { tableName: 'families' });
 

@@ -1,5 +1,6 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { Op } from 'sequelize';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { MealPlan } from '../models/index.js';
 
@@ -8,9 +9,20 @@ router.use(authenticate);
 
 router.get('/', async (req, res, next) => {
   try {
-    const meals = await MealPlan.findAll({
-      where: { family_id: req.user.family_id },
-    });
+    const { weekStart } = req.query;
+    const where = { family_id: req.user.family_id };
+
+    // If weekStart provided, filter to that week (7 days)
+    if (weekStart && /^\d{4}-\d{2}-\d{2}$/.test(weekStart) && !isNaN(Date.parse(weekStart))) {
+      const end = new Date(weekStart);
+      end.setDate(end.getDate() + 7);
+      where.date = {
+        [Op.gte]: weekStart,
+        [Op.lt]: end.toISOString().split('T')[0],
+      };
+    }
+
+    const meals = await MealPlan.findAll({ where, order: [['date', 'ASC'], ['meal_type', 'ASC']] });
     res.json(meals);
   } catch (err) {
     next(err);

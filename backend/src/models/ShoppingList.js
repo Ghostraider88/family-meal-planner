@@ -9,7 +9,6 @@ const ShoppingList = sequelize.define('ShoppingList', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
   },
   name: {
     type: DataTypes.STRING,
@@ -24,7 +23,6 @@ const ShoppingList = sequelize.define('ShoppingList', {
   },
   created_by: {
     type: DataTypes.UUID,
-    references: { model: 'Users', key: 'id' },
   },
 }, { tableName: 'shopping_lists' });
 

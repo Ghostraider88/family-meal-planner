@@ -9,7 +9,6 @@ const FamilyInvite = sequelize.define('FamilyInvite', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
     allowNull: false,
   },
   invited_email: {
@@ -19,7 +18,6 @@ const FamilyInvite = sequelize.define('FamilyInvite', {
   },
   invited_by: {
     type: DataTypes.UUID,
-    references: { model: 'Users', key: 'id' },
     allowNull: false,
   },
   status: {

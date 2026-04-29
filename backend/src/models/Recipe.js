@@ -9,7 +9,6 @@ const Recipe = sequelize.define('Recipe', {
   },
   family_id: {
     type: DataTypes.UUID,
-    references: { model: 'Families', key: 'id' },
   },
   name: {
     type: DataTypes.STRING,
@@ -38,6 +37,11 @@ const Recipe = sequelize.define('Recipe', {
   },
   source: {
     type: DataTypes.STRING,
+  },
+  images: {
+    type: DataTypes.JSONB,
+    defaultValue: [],
+    comment: 'Array of base64-encoded images or image URLs',
   },
 }, { tableName: 'recipes' });
 

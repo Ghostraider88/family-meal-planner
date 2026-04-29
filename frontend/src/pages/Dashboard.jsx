@@ -19,16 +19,18 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Fetching dashboard data...');
         const [mealsRes, recipesRes, shoppingRes] = await Promise.all([
           api.get(`/meals?weekStart=${weekStart}`),
           api.get('/recipes'),
           api.get('/shopping/lists'),
         ]);
+        console.log('Dashboard data loaded:', { meals: mealsRes?.length, recipes: recipesRes?.length, lists: shoppingRes?.length });
         setMeals(mealsRes || []);
         setRecipes(recipesRes || []);
         setShoppingLists(shoppingRes || []);
       } catch (err) {
-        console.error('Failed to fetch data:', err);
+        console.error('Failed to fetch dashboard data:', err.message, err);
       } finally {
         setLoading(false);
       }

@@ -2,12 +2,12 @@
 # Multi-stage production build for the backend API.
 # Produces a slim image with only production dependencies and non-root user.
 
-FROM node:20-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-FROM node:20-alpine AS runtime
+FROM node:25-alpine AS runtime
 ENV NODE_ENV=production
 ENV PORT=3001
 

@@ -1,0 +1,201 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+}
+
+.greeting {
+  margin-bottom: var(--s3);
+}
+
+.greeting h1 {
+  font-size: 26px;
+  color: var(--fg);
+  margin-bottom: var(--s2);
+}
+
+.greeting p {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.todayStrip {
+  background: linear-gradient(135deg, var(--green-600) 0%, var(--green-400) 100%);
+  border-radius: var(--r-lg);
+  padding: var(--s4) var(--s5);
+  color: white;
+}
+
+.todayStrip h2 {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-bottom: var(--s3);
+  color: white;
+}
+
+.mealsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.mealItem {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--r-md);
+}
+
+.mealType {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  min-width: 70px;
+  color: white;
+}
+
+.mealName {
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1;
+  color: white;
+}
+
+.actions {
+  margin-top: var(--s3);
+}
+
+.actions h2 {
+  font-size: 18px;
+  margin-bottom: var(--s4);
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s3);
+}
+
+@media (min-width: 768px) {
+  .actionGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.actionCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.actionCard:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.actionCard:active {
+  transform: scale(0.98);
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.count {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--fg-subtle);
+}
+
+.week {
+  margin-top: var(--s5);
+}
+
+.weekHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s4);
+}
+
+.weekHeader h2 {
+  font-size: 18px;
+}
+
+.seeAll {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.daysList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.dayRow {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s3) var(--s4);
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: var(--s3);
+  align-items: center;
+}
+
+.dayInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayName {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--fg);
+}
+
+.dayDate {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--fg-subtle);
+  margin-top: 2px;
+}
+
+.mealPreview {
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.mealPreview em {
+  font-style: italic;
+  color: var(--fg-subtle);
+}

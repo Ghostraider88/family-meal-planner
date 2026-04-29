@@ -7,7 +7,7 @@
 // Tokens are kept in localStorage today. This module is the single chokepoint
 // where a future migration to httpOnly cookie auth would happen.
 
-const BASE = import.meta.env.VITE_API_URL || '/api';
+const BASE = '/api';
 
 let onUnauthorized = null;
 export const setUnauthorizedHandler = (fn) => {
@@ -82,5 +82,5 @@ export const api = {
   get: (path, opts) => request(path, { ...opts, method: 'GET' }),
   post: (path, body, opts) => request(path, { ...opts, method: 'POST', json: body }),
   put: (path, body, opts) => request(path, { ...opts, method: 'PUT', json: body }),
-  del: (path, opts) => request(path, { ...opts, method: 'DELETE' }),
+  delete: (path, opts) => request(path, { ...opts, method: 'DELETE' }),
 };

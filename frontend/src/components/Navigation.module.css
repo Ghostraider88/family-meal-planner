@@ -1,0 +1,134 @@
+/* ========== BOTTOM NAV (Mobile) ========== */
+.bottomNav {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 70px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 768px) {
+  .bottomNav {
+    display: none;
+  }
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  padding: var(--s3) var(--s2);
+  background: none;
+  border: none;
+  color: var(--grey-80);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.navItem:active {
+  transform: scale(0.95);
+}
+
+.navItem.active {
+  color: var(--primary);
+}
+
+.navIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: background 0.15s;
+}
+
+.navItem.active .navIcon {
+  background: var(--primary-bg);
+}
+
+.activeIndicator {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 0 0 4px 4px;
+  transform: scaleX(0);
+  transform-origin: center;
+  animation: slideIn 0.2s ease-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ========== SIDEBAR (Desktop) ========== */
+.sidebar {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  height: calc(100vh - 64px);
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  padding: var(--s4) 0;
+  gap: var(--s4);
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+.sidebarItem {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-lg);
+  background: none;
+  border: none;
+  border-left: 4px solid transparent;
+  color: var(--grey-80);
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.sidebarItem:hover {
+  background: var(--bg-subtle);
+}
+
+.sidebarItem.active {
+  border-left-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.sidebarIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

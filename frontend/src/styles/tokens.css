@@ -1,0 +1,261 @@
+/* ============================================================
+   DESIGN TOKENS — smapOne Design System
+   ============================================================ */
+:root {
+  /* Primary Colors (smapOne) */
+  --smap-blue:      #00C5FF;
+  --smap-blue-light: #D4EDFC;
+  --smurple:        #550AA8;
+  --smap-yellow:    #FFDD00;
+
+  /* Background Colors */
+  --dark-blue:      #003457;
+  --light-blue:     #D4EDFC;
+
+  /* Grayscale */
+  --grey-180:       #403E4E;
+  --grey-80:        #8B91A3;
+  --grey-50:        #B2B7C7;
+  --grey-20:        #E3E6EF;
+  --grey-5:         #F0F2F9;
+
+  /* Signal Colors */
+  --signal-red:     #FF0048;
+  --approval-green: #3DB384;
+
+  /* Base Colors */
+  --black:          #000000;
+  --white:          #FFFFFF;
+
+  /* Semantic */
+  --bg:             var(--white);
+  --bg-card:        var(--white);
+  --bg-subtle:      var(--grey-5);
+  --bg-muted:       var(--grey-20);
+  --bg-dark:        var(--dark-blue);
+
+  --fg:             var(--grey-180);
+  --fg-muted:       var(--grey-80);
+  --fg-subtle:      var(--grey-50);
+  --fg-light:       var(--white);
+
+  --primary:        var(--smap-blue);
+  --primary-dark:   #0099CC;
+  --primary-bg:     var(--light-blue);
+  --primary-light:  var(--light-blue);
+
+  --accent:         var(--smurple);
+  --accent-bg:      rgba(85, 10, 168, 0.1);
+
+  --highlight:      var(--smap-yellow);
+
+  --border:         var(--grey-20);
+  --border-focus:   var(--smap-blue);
+
+  --danger:         var(--signal-red);
+  --success:        var(--approval-green);
+
+  /* Typography */
+  --font-display:   'Poppins', sans-serif;
+  --font-body:      'Inter', sans-serif;
+
+  /* Spacing (8px base) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+  --s12: 48px;
+
+  /* Radii */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 24px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.04);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;600&display=swap');
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 { font-size: 60px; }
+h2 { font-size: 32px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+
+/* Links */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* ============================================================
+   INPUTS & FORMS
+   ============================================================ */
+input, textarea, select {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  color: var(--fg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
+}
+
+input::placeholder {
+  color: var(--fg-subtle);
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+  padding: var(--s3) var(--s5);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: #0099CC;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--bg-muted);
+  color: var(--fg);
+  padding: var(--s3) var(--s4);
+}
+
+.btn-secondary:hover {
+  background: var(--grey-20);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.btn-icon.secondary {
+  background: var(--bg-muted);
+  color: var(--fg-muted);
+}
+
+.btn-icon.secondary:hover {
+  background: var(--grey-20);
+  color: var(--fg);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

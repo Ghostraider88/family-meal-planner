@@ -1,0 +1,158 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin: 0;
+  color: var(--fg);
+}
+
+.form {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+  box-shadow: var(--shadow-sm);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  color: var(--fg);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  background: var(--white);
+  color: var(--fg);
+  font-family: var(--font-body);
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--s5);
+}
+
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recipesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+}
+
+.empty {
+  text-align: center;
+  color: var(--grey-80);
+  padding: var(--s8);
+  background: var(--white);
+  border: 2px dashed var(--border);
+  border-radius: var(--r-lg);
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--s5);
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recipeCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.recipeCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.cardContent h3 {
+  margin: 0 0 var(--s4) 0;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--fg);
+}
+
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+
+.tag {
+  background: var(--primary-bg);
+  color: var(--primary);
+  padding: var(--s2) var(--s3);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: var(--s2);
+  border-radius: var(--r-md);
+  transition: all 0.2s;
+  align-self: flex-end;
+}
+
+.deleteBtn:hover {
+  background: #FFE5E5;
+  transform: scale(1.05);
+}

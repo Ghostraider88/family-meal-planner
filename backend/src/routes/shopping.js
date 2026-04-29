@@ -45,7 +45,11 @@ router.get('/lists', async (req, res, next) => {
   try {
     const lists = await ShoppingList.findAll({
       where: { family_id: req.user.family_id },
-      include: [{ model: ShoppingItem, order: [['item_order', 'ASC']] }],
+      include: [{
+        model: ShoppingItem,
+        order: [['item_order', 'ASC']],
+        separate: true,
+      }],
     });
     res.json(lists);
   } catch (err) {
@@ -73,7 +77,11 @@ router.get('/lists/:id', isListUuid, validate, async (req, res, next) => {
   try {
     const list = await ShoppingList.findOne({
       where: { id: req.params.id, family_id: req.user.family_id },
-      include: [{ model: ShoppingItem, order: [['item_order', 'ASC']] }],
+      include: [{
+        model: ShoppingItem,
+        order: [['item_order', 'ASC']],
+        separate: true,
+      }],
     });
     if (!list) return res.status(404).json({ error: 'List not found' });
     res.json(list);

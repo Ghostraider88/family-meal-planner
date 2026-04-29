@@ -1,261 +1,72 @@
-# 🚀 Deployment Checklist
+# Deployment Checklist
 
-Verwende diese Checkliste, um sicherzustellen, dass alles vor dem Deployment bereit ist.
-
----
-
-## 📋 Vor dem Lokal Testen (Docker)
-
-### Vorbereitung
-- [ ] Repository geforkt/geklont
-- [ ] Branch: `claude/build-family-meal-planner-gaixR`
-- [ ] Node.js 18+ installiert (optional, für lokale Entwicklung)
-- [ ] Docker Desktop installiert und läuft
-- [ ] `docker --version` funktioniert
-- [ ] `docker-compose --version` funktioniert
-
-### Konfiguration
-- [ ] `backend/.env` vorhanden (from `.env.example`)
-- [ ] `SMTP_SERVICE` gesetzt (gmail, sendgrid, etc.)
-- [ ] `SMTP_USER` mit echtem Email-Account
-- [ ] `SMTP_PASSWORD` korrekt (Gmail: App Password, nicht Passwort)
-- [ ] `JWT_SECRET` ist nicht "your-secret" (random string)
-- [ ] `CORS_ORIGIN` = `http://localhost:3000`
-- [ ] `DB_PASSWORD` nicht default (egal lokal, aber good practice)
-
-### Abhängigkeiten
-- [ ] `npm install` im `/backend` durchgeführt
-- [ ] `npm install` im `/frontend` durchgeführt
-- [ ] Alle Dependencies installiert (check `package-lock.json`)
+Use this list before going live with `docker-compose.prod.yml`. The dev
+stack (`docker-compose.yml`) does not require these checks.
 
 ---
 
-## 🐳 Docker Build & Start
+## 1. Environment
 
-### Build Phase
-- [ ] `docker-compose build` erfolgreich (kein Error)
-- [ ] Beide Images gebaut: `backend` und `frontend`
-- [ ] Postgres Image gedownloadet
-- [ ] Build logs anschauen für Warnungen
+- [ ] `.env` exists in repo root (copied from `.env.example`).
+- [ ] `POSTGRES_PASSWORD` is strong, unique, not committed anywhere.
+- [ ] `JWT_SECRET` is at least 32 characters and freshly generated
+      (`openssl rand -base64 48`).
+- [ ] `JWT_REFRESH_SECRET` is at least 32 characters and **differs** from
+      `JWT_SECRET`.
+- [ ] No `.env` value matches a known dev default
+      (`dev-jwt-secret-...`, `your-super-secret-...`, `secure_password_123`,
+      etc.). `git grep` for those strings should return nothing in tracked
+      files.
+- [ ] `CORS_ORIGIN` is set to the exact public origin and is **not** `*`.
+- [ ] `COOKIE_SECURE=true` if behind HTTPS, `false` only on plain LAN HTTP.
+- [ ] `TRUST_PROXY` matches your topology (`loopback` for the bundled
+      Nginx; numeric hops if you add an external reverse proxy).
 
-### Start Phase
-- [ ] `docker-compose up -d` startet alle Services
-- [ ] Alle 3 Container laufen: `docker ps` zeigt 3 running containers
-- [ ] Keine Container crashen nach 30 Sekunden
+## 2. Compose
 
-### Health Checks
-- [ ] `docker-compose logs postgres` — "server started" message
-- [ ] `docker-compose logs backend` — "🚀 Server running"
-- [ ] `docker-compose logs frontend` — "Network: http://localhost:3000"
-- [ ] `curl http://localhost:3001/api/health` returns `{"status":"ok"}`
+- [ ] `docker compose -f docker-compose.prod.yml config --quiet` exits 0.
+- [ ] Only the `frontend` service publishes a host port (`8087:80`).
+- [ ] `backend` and `postgres` have **no** `ports:` block.
+- [ ] `postgres` is on `backend_net` only; not on `frontend_net`.
+- [ ] All services have `restart: unless-stopped` and a healthcheck.
+- [ ] `postgres_data` named volume is backed up regularly.
 
----
+## 3. Database
 
-## 🧪 Feature Tests (im Browser)
+- [ ] First boot: `docker compose -f docker-compose.prod.yml run --rm backend npm run db:migrate` ran clean.
+- [ ] `db:migrate:status` shows all migrations as `up`.
+- [ ] No production code path triggers `sequelize.sync({alter:...})` (the
+      app refuses to sync in production).
+- [ ] A backup job is scheduled (cron / Task Scheduler) calling
+      `scripts/backup-db.sh` or `scripts/backup-db.ps1`.
+- [ ] Restore tested at least once on a non-production volume.
 
-### Auth Flow
-- [ ] `http://localhost:3000` zeigt Login-Screen
-- [ ] Registrieren-Link funktioniert
-- [ ] Registrierung mit Email/Password/Name funktioniert
-- [ ] Nach Registrierung zum Dashboard redirected
-- [ ] Dashboard zeigt "Willkommen, [Name]"
-- [ ] Logout Button existiert und funktioniert
-- [ ] Nach Logout zurück zu Login
+## 4. Health and security
 
-### Recipes Feature
-- [ ] `/recipes` Seite lädt
-- [ ] Neues Rezept-Form sichtbar
-- [ ] Rezept erstellen funktioniert
-- [ ] Rezept in der Liste angezeigt
-- [ ] Rezept-Link klickbar
+- [ ] `curl http://<host>:8087/api/health` returns `{ "status": "ok" }`.
+- [ ] `curl http://<host>:8087/api/ready` returns `db: connected`.
+- [ ] Backend container reports `healthy` in `docker compose ps`.
+- [ ] `docker compose logs backend | grep -iE "secret|password|token"`
+      contains no secret values (only `[REDACTED]` if at all).
+- [ ] `nmap` or equivalent against the host shows only port 8087 (and
+      whatever ports your reverse proxy listens on); 3001 and 5432 are
+      closed.
+- [ ] Auth endpoints are rate-limited (try 11 logins from one IP within
+      the window — the 11th should be rejected with HTTP 429).
 
-### Meal Planning
-- [ ] `/week` Seite lädt
-- [ ] Woche angezeigt
-- [ ] Kann zu Woche navigieren
+## 5. Frontend
 
-### Shopping Lists
-- [ ] `/shopping` Seite lädt
-- [ ] Neue Liste erstellen funktioniert
-- [ ] Liste in der Liste angezeigt
+- [ ] Frontend image built without warnings about source maps or env leaks.
+- [ ] Browser dev tools network tab shows `/api/...` calls go to the same
+      origin (no `localhost:3030` leaking from a dev build).
+- [ ] On 401 the SPA logs the user out instead of looping refreshes.
 
-### Family Management (Phase 2)
-- [ ] `/family` Seite lädt
-- [ ] "+ Einladen" Button vorhanden
-- [ ] Modal öffnet sich beim Klick
-- [ ] Email-Input akzeptiert Email
-- [ ] Einladung senden Button funktioniert
-- [ ] Error/Success Nachricht angezeigt
-- [ ] Familie Members List nicht leer (mindestens du selbst)
+## 6. Operations
 
----
-
-## 🔧 API Tests
-
-### Mit Postman oder curl
-
-```bash
-# 1. Registrieren
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email":"test@test.de",
-    "password":"test123456",
-    "name":"Test User"
-  }'
-# [ ] Returns token + user data
-# [ ] Token speichern für nächste Requests
-
-# 2. Recipes abrufen
-curl -H "Authorization: Bearer <YOUR_TOKEN>" \
-  http://localhost:3001/api/recipes
-# [ ] Returns empty array [] oder Rezepte
-
-# 3. Rezept erstellen
-curl -X POST http://localhost:3001/api/recipes \
-  -H "Authorization: Bearer <YOUR_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name":"Spaghetti",
-    "time_minutes":30,
-    "servings":4,
-    "difficulty":"easy"
-  }'
-# [ ] Returns created recipe with ID
-
-# 4. Einladung testen (optional, nur wenn SMTP funktioniert)
-curl -X POST http://localhost:3001/api/users/family/invite \
-  -H "Authorization: Bearer <YOUR_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email":"friend@test.de"
-  }'
-# [ ] Returns success message (oder error wenn SMTP nicht configured)
-```
-
----
-
-## 🌐 Production Checklist (Nur bei Deployment)
-
-### Server Vorbereitung
-- [ ] VPS/Server mit mindestens 2GB RAM
-- [ ] Ubuntu 20.04 oder neuer
-- [ ] SSH Access funktioniert
-- [ ] `sudo` Zugang vorhanden
-
-### Docker Installation
-- [ ] `curl -fsSL https://get.docker.com -o get-docker.sh` ausgeführt
-- [ ] Docker installiert: `docker --version` funktioniert
-- [ ] Docker Compose installiert: `docker-compose --version` funktioniert
-- [ ] User in docker group: `groups $USER` zeigt docker
-
-### Repo & Config
-- [ ] Repository auf `/opt/family-meal-planner` geklont
-- [ ] `backend/.env` mit Production-Secrets erstellt:
-  - [ ] Neue `JWT_SECRET` (aus `openssl rand -base64 32`)
-  - [ ] Neue `JWT_REFRESH_SECRET` (aus `openssl rand -base64 32`)
-  - [ ] Neue `DB_PASSWORD` (min 20 chars, sehr stark)
-  - [ ] `DB_NAME` auf "family_meal_planner_prod" geändert
-  - [ ] `DB_USER` auf "planner_prod_user" geändert
-  - [ ] `CORS_ORIGIN` auf `https://your-domain.com`
-  - [ ] `FRONTEND_URL` auf `https://your-domain.com`
-  - [ ] SMTP mit echtem Email-Account konfiguriert
-  - [ ] Alle Secrets sind NICHT Default-Werte
-
-### DNS & Domain
-- [ ] Domain zeigt auf Server IP (A Record)
-- [ ] DNS Propagation abgewartet (~10 min)
-- [ ] `nslookup your-domain.com` zeigt richtige IP
-
-### SSL Zertifikat
-- [ ] Let's Encrypt Zertifikat generiert mit Certbot
-- [ ] Zertifikat in `/etc/letsencrypt/live/your-domain.com/`
-- [ ] Certbot auto-renew konfiguriert
-- [ ] Test renewal erfolgreich: `certbot renew --dry-run`
-
-### Reverse Proxy (Nginx)
-- [ ] Nginx config erstellt und aktiviert
-- [ ] `sudo nginx -t` zeigt "ok"
-- [ ] Frontend Proxy auf `:3000` konfiguriert
-- [ ] API Proxy auf `:3001` konfiguriert
-- [ ] HTTPS redirect von HTTP konfiguriert
-- [ ] Nginx gestartet und enabled: `sudo systemctl enable nginx`
-
-### Docker Containers
-- [ ] `docker-compose build` erfolgreich
-- [ ] `docker-compose up -d` startet alle Container
-- [ ] `docker-compose ps` zeigt 3 running
-- [ ] `docker-compose logs backend | grep "Server running"` erfolgreich
-- [ ] `curl http://localhost:3001/api/health` funktioniert
-- [ ] `curl http://localhost:3000` zeigt React App
-
-### Firewall & Sicherheit
-- [ ] UFW Firewall Port 80 offen: `sudo ufw allow 80`
-- [ ] UFW Firewall Port 443 offen: `sudo ufw allow 443`
-- [ ] SSH Port offen (default 22): `sudo ufw allow 22`
-- [ ] UFW aktiv: `sudo ufw enable`
-- [ ] Nur Frontend+API öffentlich, Database privat (5432 nur localhost)
-
-### Backup
-- [ ] Backup Script erstellt: `/opt/family-meal-planner/backup.sh`
-- [ ] Backup Script executable: `chmod +x backup.sh`
-- [ ] Cron job erstellt: `0 2 * * * /opt/family-meal-planner/backup.sh`
-- [ ] Test backup durchgeführt: `./backup.sh`
-- [ ] Backup Datei vorhanden: `ls -la backups/`
-
-### Final Tests
-- [ ] `https://your-domain.com` zeigt Login-Screen
-- [ ] Registrierung funktioniert
-- [ ] Login funktioniert
-- [ ] Rezept erstellen funktioniert
-- [ ] Familie Invite funktioniert
-- [ ] HTTPS lädt ohne Warnung (grünes Schloss)
-
----
-
-## 🚨 Fallback Plan
-
-Falls etwas schiefgeht:
-
-### Container stürzen ab
-```bash
-docker-compose logs backend  # Fehler anschauen
-docker-compose restart backend  # Neustarten
-```
-
-### Database Fehler
-```bash
-docker-compose down -v  # Alle Daten löschen (VORSICHT!)
-docker-compose up -d  # Fresh start
-```
-
-### SMTP funktioniert nicht
-- [ ] Gmail: [App Password](https://support.google.com/accounts/answer/185833) verwenden
-- [ ] Alternative: Sendgrid API Key verwenden
-- [ ] Fallback: Email-Invites können auch manuell gemacht werden
-
-### Datenbank wiederherstellen
-```bash
-docker exec family-meal-planner-db psql -U planner_user \
-  family_meal_planner < backup.sql
-```
-
----
-
-## ✅ Fertig Deployt!
-
-Wenn alle Checkboxen ✅ sind:
-
-🎉 **Herzlichen Glückwunsch! Die App läuft!**
-
-Nächste Schritte:
-- Mehr Benutzer einladen
-- Phase 2 Feature 2 (Recipe Importing) implementieren
-- Monitoring einrichten
-- Regular Backups überprüfen
-
----
-
-Made with ❤️ by Claude Code
-
-Letzte Aktualisierung: 2026-04-28
+- [ ] Update procedure documented and rehearsed (`git pull` →
+      `docker compose -f docker-compose.prod.yml up -d --build` →
+      migrate).
+- [ ] Rollback path documented (previous image tag or `git checkout`).
+- [ ] Reverse proxy / HTTPS termination decided (or explicitly skipped
+      because the host is LAN-only).
+- [ ] Off-host backup copy strategy in place (rsync / S3 / external drive).

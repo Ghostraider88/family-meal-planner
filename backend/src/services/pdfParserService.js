@@ -1,4 +1,6 @@
-import pdf from 'pdf-parse/lib/pdf-parse.js';
+import * as pdfModule from 'pdf-parse';
+
+const pdfParse = pdfModule.default || pdfModule;
 
 /**
  * Parse PDF text to extract recipe structure
@@ -6,7 +8,7 @@ import pdf from 'pdf-parse/lib/pdf-parse.js';
  */
 export const parsePdfRecipe = async (pdfBuffer) => {
   try {
-    const data = await pdf(pdfBuffer);
+    const data = await pdfParse(pdfBuffer);
     const text = data.text;
 
     return parseRecipeText(text);

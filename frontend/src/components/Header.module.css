@@ -1,37 +1,38 @@
 .header {
-  height: 60px;
-  padding: 0 var(--s5);
-  background: var(--bg-card);
+  height: 64px;
+  padding: 0 var(--s6);
+  background: var(--white);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s4);
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .left {
   display: flex;
   align-items: center;
-  gap: var(--s3);
+  gap: var(--s4);
   min-width: 0;
 }
 
 .logo {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--r-md);
   background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 24px;
   flex-shrink: 0;
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--fg);
   white-space: nowrap;
@@ -42,45 +43,45 @@
 }
 
 .title .meal {
-  color: var(--primary);
+  color: var(--smurple);
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: var(--s3);
+  gap: var(--s4);
   flex-shrink: 0;
 }
 
 .iconBtn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border-radius: var(--r-md);
-  background: var(--bg-muted);
+  background: transparent;
   border: none;
-  color: var(--fg-muted);
+  color: var(--grey-80);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   transition: all 0.15s;
 }
 
 .iconBtn:hover {
-  background: var(--neutral-200);
-  color: var(--fg);
+  background: var(--bg-subtle);
+  color: var(--primary);
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: var(--primary-bg);
-  border: 2px solid var(--primary-light);
-  color: var(--green-700);
-  font-family: var(--font-body);
+  background: var(--primary);
+  border: none;
+  color: var(--white);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -91,8 +92,8 @@
 }
 
 .avatar:hover {
-  background: var(--green-100);
-  box-shadow: var(--shadow-sm);
+  background: #0099CC;
+  box-shadow: var(--shadow-md);
 }
 
 .avatar:active {

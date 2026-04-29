@@ -1,64 +1,65 @@
 /* ============================================================
-   DESIGN TOKENS — FamilyMealPlanner
+   DESIGN TOKENS — smapOne Design System
    ============================================================ */
 :root {
-  /* Brand colors */
-  --green-50:   #f0faf4;
-  --green-100:  #d6f2e0;
-  --green-200:  #a8e0bc;
-  --green-400:  #52b87a;
-  --green-500:  #38a05e;
-  --green-600:  #2d8a4e;
-  --green-700:  #1f6337;
+  /* Primary Colors (smapOne) */
+  --smap-blue:      #00C5FF;
+  --smap-blue-light: #D4EDFC;
+  --smurple:        #550AA8;
+  --smap-yellow:    #FFDD00;
 
-  --orange-50:  #fff7ed;
-  --orange-100: #ffe4c4;
-  --orange-300: #ffa94d;
-  --orange-400: #ff8c2a;
-  --orange-500: #f27108;
+  /* Background Colors */
+  --dark-blue:      #003457;
+  --light-blue:     #D4EDFC;
 
-  --cream-50:   #fdfaf5;
-  --cream-100:  #f6f0e4;
-  --cream-200:  #ede4d3;
+  /* Grayscale */
+  --grey-180:       #403E4E;
+  --grey-80:        #8B91A3;
+  --grey-50:        #B2B7C7;
+  --grey-20:        #E3E6EF;
+  --grey-5:         #F0F2F9;
 
-  --neutral-0:   #ffffff;
-  --neutral-50:  #f9f9f8;
-  --neutral-100: #f0efec;
-  --neutral-200: #e3e1db;
-  --neutral-400: #a8a49c;
-  --neutral-600: #6b6760;
-  --neutral-800: #2e2b26;
-  --neutral-900: #1a1814;
+  /* Signal Colors */
+  --signal-red:     #FF0048;
+  --approval-green: #3DB384;
+
+  /* Base Colors */
+  --black:          #000000;
+  --white:          #FFFFFF;
 
   /* Semantic */
-  --bg:           var(--cream-50);
-  --bg-card:      var(--neutral-0);
-  --bg-subtle:    var(--neutral-50);
-  --bg-muted:     var(--neutral-100);
+  --bg:             var(--white);
+  --bg-card:        var(--white);
+  --bg-subtle:      var(--grey-5);
+  --bg-muted:       var(--grey-20);
+  --bg-dark:        var(--dark-blue);
 
-  --fg:           var(--neutral-900);
-  --fg-muted:     var(--neutral-600);
-  --fg-subtle:    var(--neutral-400);
+  --fg:             var(--grey-180);
+  --fg-muted:       var(--grey-80);
+  --fg-subtle:      var(--grey-50);
+  --fg-light:       var(--white);
 
-  --primary:      var(--green-500);
-  --primary-dark: var(--green-600);
-  --primary-bg:   var(--green-50);
-  --primary-light:var(--green-100);
+  --primary:        var(--smap-blue);
+  --primary-dark:   #0099CC;
+  --primary-bg:     var(--light-blue);
+  --primary-light:  var(--light-blue);
 
-  --accent:       var(--orange-400);
-  --accent-bg:    var(--orange-50);
+  --accent:         var(--smurple);
+  --accent-bg:      rgba(85, 10, 168, 0.1);
 
-  --border:       var(--neutral-200);
-  --border-focus: var(--green-400);
+  --highlight:      var(--smap-yellow);
 
-  --danger:       #e5383b;
-  --success:      var(--green-500);
+  --border:         var(--grey-20);
+  --border-focus:   var(--smap-blue);
+
+  --danger:         var(--signal-red);
+  --success:        var(--approval-green);
 
   /* Typography */
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display:   'Poppins', sans-serif;
+  --font-body:      'Inter', sans-serif;
 
-  /* Spacing */
+  /* Spacing (8px base) */
   --s1: 4px;
   --s2: 8px;
   --s3: 12px;
@@ -70,18 +71,20 @@
   --s12: 48px;
 
   /* Radii */
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 16px;
-  --r-xl: 22px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 24px;
   --r-full: 9999px;
 
   /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.11), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.04);
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;600&display=swap');
 
 /* ============================================================
    RESET & BASE
@@ -102,6 +105,7 @@ body {
   color: var(--fg);
   font-family: var(--font-body);
   font-size: 16px;
+  font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -118,9 +122,12 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-h1 { font-size: 26px; }
-h2 { font-size: 22px; }
-h3 { font-size: 18px; }
+h1 { font-size: 60px; }
+h2 { font-size: 32px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
 
 /* Links */
 a {
@@ -139,11 +146,14 @@ a:hover {
 input, textarea, select {
   font-family: var(--font-body);
   font-size: 16px;
+  font-weight: 400;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="number"],
+input[type="date"],
 textarea,
 select {
   width: 100%;
@@ -158,11 +168,13 @@ select {
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(82, 184, 122, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
 }
 
 input::placeholder {
@@ -171,9 +183,9 @@ input::placeholder {
 
 /* Buttons */
 button {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   border-radius: var(--r-md);
   cursor: pointer;
@@ -186,13 +198,15 @@ button {
 
 .btn-primary {
   background: var(--primary);
-  color: white;
+  color: var(--white);
   padding: var(--s3) var(--s5);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
-  box-shadow: var(--shadow-sm);
+  background: #0099CC;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active {
@@ -206,12 +220,13 @@ button {
 }
 
 .btn-secondary:hover {
-  background: var(--neutral-200);
+  background: var(--grey-20);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   display: flex;
   align-items: center;
@@ -225,7 +240,7 @@ button {
 }
 
 .btn-icon.secondary:hover {
-  background: var(--neutral-200);
+  background: var(--grey-20);
   color: var(--fg);
 }
 

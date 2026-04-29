@@ -59,7 +59,7 @@ export default function MealsPage() {
   const dates = Object.keys(mealsByDate).sort();
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{ minHeight: '100vh' }}>
       <div className={styles.header}>
         <h1>📅 Wochenplaner</h1>
         <button

@@ -85,7 +85,7 @@ export default function ShoppingPage() {
   };
 
   const selectedList = lists.find((l) => l.id === selectedListId);
-  const items = selectedList?.ShoppingItems || [];
+  const items = (selectedList?.ShoppingItems || selectedList?.shoppingItems || []);
 
   return (
     <div className={styles.container}>

@@ -50,6 +50,10 @@ export default function Dashboard() {
     return meals.filter((m) => m.date === dateStr);
   };
 
+  if (loading) {
+    return <div className={styles.dashboard}><p>Lädt...</p></div>;
+  }
+
   return (
     <div className={styles.dashboard}>
       <section className={styles.greeting}>

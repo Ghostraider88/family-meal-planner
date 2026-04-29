@@ -1,10 +1,17 @@
 import express from 'express';
+import { body, param } from 'express-validator';
+import { validate } from '../middleware/validate.js';
+import { authLimiter } from '../middleware/rateLimiters.js';
 import { getInviteByToken, acceptInvite, declineInvite } from '../services/inviteService.js';
 
 const router = express.Router();
 
-// Public routes - no authentication needed yet (user might not be logged in)
-router.get('/:token', async (req, res, next) => {
+// Tokens are URL-safe random; cap length to avoid abuse
+const tokenParam = param('token').isString().isLength({ min: 16, max: 256 });
+
+router.use(authLimiter);
+
+router.get('/:token', tokenParam, validate, async (req, res, next) => {
   try {
     const invite = await getInviteByToken(req.params.token);
     res.json({
@@ -18,19 +25,21 @@ router.get('/:token', async (req, res, next) => {
   }
 });
 
-router.post('/:token/accept', async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
-
-    const user = await acceptInvite(req.params.token, email);
-    res.json({ message: 'Invite accepted', user });
-  } catch (err) {
-    next(err);
+router.post(
+  '/:token/accept',
+  [tokenParam, body('email').isEmail().isLength({ max: 255 })],
+  validate,
+  async (req, res, next) => {
+    try {
+      const user = await acceptInvite(req.params.token, req.body.email);
+      res.json({ message: 'Invite accepted', user });
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
-router.post('/:token/decline', async (req, res, next) => {
+router.post('/:token/decline', tokenParam, validate, async (req, res, next) => {
   try {
     await declineInvite(req.params.token);
     res.json({ message: 'Invite declined' });

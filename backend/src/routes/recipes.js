@@ -1,11 +1,14 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
+import { body, param } from 'express-validator';
 import { authenticate } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validate.js';
 import { Recipe } from '../models/index.js';
 import { parsePdfRecipe } from '../services/pdfParserService.js';
 
 const router = express.Router();
+
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
@@ -20,6 +23,19 @@ const upload = multer({
 
 router.use(authenticate);
 
+const isUuid = param('id').isUUID().withMessage('Invalid id');
+
+const recipeBodyValidators = [
+  body('name').isString().trim().isLength({ min: 1, max: 200 }),
+  body('time_minutes').optional({ nullable: true }).isInt({ min: 0, max: 10000 }).toInt(),
+  body('servings').optional({ nullable: true }).isInt({ min: 0, max: 1000 }).toInt(),
+  body('difficulty').optional({ nullable: true }).isIn(['easy', 'medium', 'hard']),
+  body('ingredients').optional().isArray({ max: 200 }),
+  body('instructions').optional().isArray({ max: 200 }),
+  body('tags').optional().isArray({ max: 30 }),
+  body('source').optional({ nullable: true }).isString().isLength({ max: 500 }),
+];
+
 router.get('/', async (req, res, next) => {
   try {
     const recipes = await Recipe.findAll({ where: { family_id: req.user.family_id } });
@@ -29,24 +45,15 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', recipeBodyValidators, validate, async (req, res, next) => {
   try {
     const { name, time_minutes, servings, difficulty, ingredients, instructions, tags, source } = req.body;
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return res.status(400).json({ error: 'Recipe name required' });
-    }
-    if (ingredients !== undefined && !Array.isArray(ingredients)) {
-      return res.status(400).json({ error: 'Ingredients must be an array' });
-    }
-    if (instructions !== undefined && !Array.isArray(instructions)) {
-      return res.status(400).json({ error: 'Instructions must be an array' });
-    }
     const recipe = await Recipe.create({
       id: uuidv4(),
       family_id: req.user.family_id,
       name: name.trim(),
-      time_minutes: time_minutes ? parseInt(time_minutes) : null,
-      servings: servings ? parseInt(servings) : null,
+      time_minutes: time_minutes ?? null,
+      servings: servings ?? null,
       difficulty: difficulty || null,
       ingredients: ingredients || [],
       instructions: instructions || [],
@@ -59,7 +66,7 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', isUuid, validate, async (req, res, next) => {
   try {
     const recipe = await Recipe.findOne({
       where: { id: req.params.id, family_id: req.user.family_id },
@@ -71,16 +78,16 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', [isUuid, ...recipeBodyValidators.map((v) => v.optional())], validate, async (req, res, next) => {
   try {
-    const { name, time_minutes, servings, difficulty, ingredients, instructions, tags, source } = req.body;
     const recipe = await Recipe.findOne({
       where: { id: req.params.id, family_id: req.user.family_id },
     });
     if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
 
+    const { name, time_minutes, servings, difficulty, ingredients, instructions, tags, source } = req.body;
     await recipe.update({
-      name: name || recipe.name,
+      name: name ?? recipe.name,
       time_minutes: time_minutes !== undefined ? time_minutes : recipe.time_minutes,
       servings: servings !== undefined ? servings : recipe.servings,
       difficulty: difficulty || recipe.difficulty,
@@ -95,7 +102,7 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', isUuid, validate, async (req, res, next) => {
   try {
     const recipe = await Recipe.findOne({
       where: { id: req.params.id, family_id: req.user.family_id },
@@ -109,7 +116,7 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 // PDF Import endpoint
-router.post('/import/pdf', upload.single('pdf'), async (req, res, next) => {
+router.post('/import/pdf', upload.single('pdf'), async (req, res, _next) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No PDF file provided' });
@@ -117,7 +124,6 @@ router.post('/import/pdf', upload.single('pdf'), async (req, res, next) => {
 
     const parsedRecipe = await parsePdfRecipe(req.file.buffer);
 
-    // Return parsed recipe for preview/editing
     res.json({
       preview: parsedRecipe,
       message: 'PDF parsed successfully. Review and edit before saving.',

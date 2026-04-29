@@ -82,5 +82,5 @@ export const api = {
   get: (path, opts) => request(path, { ...opts, method: 'GET' }),
   post: (path, body, opts) => request(path, { ...opts, method: 'POST', json: body }),
   put: (path, body, opts) => request(path, { ...opts, method: 'PUT', json: body }),
-  del: (path, opts) => request(path, { ...opts, method: 'DELETE' }),
+  delete: (path, opts) => request(path, { ...opts, method: 'DELETE' }),
 };

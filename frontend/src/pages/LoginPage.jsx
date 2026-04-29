@@ -1,14 +1,13 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { api } from '../services/api';
 import styles from './AuthPage.module.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setUser, setToken } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const { login } = useContext(AuthContext);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,18 +21,16 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError('');
 
     try {
-      const response = await api.post('/auth/login', formData, { skipAuth: true });
-      setToken(response.token);
-      setUser(response.user);
+      await login(formData.email, formData.password);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -59,7 +56,7 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="deine@email.de"
               required
-              disabled={loading}
+              disabled={isLoading}
             />
           </div>
 
@@ -73,17 +70,17 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              disabled={loading}
+              disabled={isLoading}
             />
           </div>
 
           <button
             type="submit"
             className="btn-primary"
-            disabled={loading}
+            disabled={isLoading}
             style={{ width: '100%' }}
           >
-            {loading ? 'Wird angemeldet...' : 'Anmelden'}
+            {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
           </button>
         </form>
 

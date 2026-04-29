@@ -1,14 +1,13 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { api } from '../services/api';
 import styles from './AuthPage.module.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { setUser, setToken } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const { register } = useContext(AuthContext);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,18 +22,16 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError('');
 
     try {
-      const response = await api.post('/auth/register', formData, { skipAuth: true });
-      setToken(response.token);
-      setUser(response.user);
+      await register(formData.email, formData.password, formData.name);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -60,7 +57,7 @@ export default function RegisterPage() {
               onChange={handleChange}
               placeholder="Dein Name"
               required
-              disabled={loading}
+              disabled={isLoading}
             />
           </div>
 
@@ -74,7 +71,7 @@ export default function RegisterPage() {
               onChange={handleChange}
               placeholder="deine@email.de"
               required
-              disabled={loading}
+              disabled={isLoading}
             />
           </div>
 
@@ -89,17 +86,17 @@ export default function RegisterPage() {
               placeholder="••••••••••••"
               minLength="12"
               required
-              disabled={loading}
+              disabled={isLoading}
             />
           </div>
 
           <button
             type="submit"
             className="btn-primary"
-            disabled={loading}
+            disabled={isLoading}
             style={{ width: '100%' }}
           >
-            {loading ? 'Wird registriert...' : 'Registrieren'}
+            {isLoading ? 'Wird registriert...' : 'Registrieren'}
           </button>
         </form>
 

@@ -1,16 +1,27 @@
 {
   "name": "family-meal-planner",
   "version": "1.0.0",
-  "description": "Family Meal Planner App with Shopping Lists",
+  "description": "Self-hosted family meal planner",
   "main": "backend/src/app.js",
   "type": "module",
   "scripts": {
     "dev": "cd backend && node --watch src/app.js",
     "start": "cd backend && node src/app.js",
-    "build": "echo 'Build steps here'",
-    "test": "echo 'Tests coming soon'"
+    "build": "cd frontend && npm ci && npm run build",
+    "test": "cd backend && npm test",
+    "docker:dev": "docker compose up -d --build",
+    "docker:dev:down": "docker compose down",
+    "docker:prod:build": "docker compose -f docker-compose.prod.yml build",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
+    "db:migrate:prod": "docker compose -f docker-compose.prod.yml run --rm backend npm run db:migrate",
+    "db:backup:prod": "./scripts/backup-db.sh"
   },
-  "keywords": ["meal-planning", "shopping", "family"],
-  "author": "Claude Code",
+  "keywords": [
+    "meal-planning",
+    "shopping",
+    "family"
+  ],
   "license": "MIT"
 }

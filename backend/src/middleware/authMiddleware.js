@@ -1,15 +1,5 @@
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const INSECURE_SECRETS = new Set(['your-secret', 'your-super-secret-jwt-key-change-in-production']);
-if (!JWT_SECRET || INSECURE_SECRETS.has(JWT_SECRET)) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('FATAL: JWT_SECRET is not set or is using a known-insecure default value in production!');
-    process.exit(1);
-  } else {
-    console.warn('WARNING: JWT_SECRET is weak or missing. Replace before deploying to production.');
-  }
-}
+import config from '../config/env.js';
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -19,28 +9,44 @@ export const authenticate = (req, res, next) => {
 
   const token = authHeader.substring(7);
   try {
-    const decoded = jwt.verify(token, JWT_SECRET || 'dev-only-insecure-secret');
+    const decoded = jwt.verify(token, config.JWT.secret, {
+      issuer: config.JWT.issuer,
+      audience: config.JWT.audience,
+    });
     req.user = decoded;
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       return res.status(401).json({ error: 'Token expired' });
     }
-    res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };
 
-export const errorHandler = (err, req, res, next) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+/**
+ * Centralized error handler. In production, never leak stack traces or
+ * internal error messages on 5xx responses.
+ */
+export const errorHandler = (err, req, res, _next) => {
+  const status = err.status || err.statusCode || 500;
 
-  if (isProduction) {
-    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} — ${err.message}`);
+  if (config.isProd) {
+    console.error(
+      `[${new Date().toISOString()}] ${req.method} ${req.path} ${status} -- ${err.name}: ${err.message}`
+    );
   } else {
     console.error(err);
   }
 
-  const status = err.status || 500;
-  res.status(status).json({
-    error: status < 500 ? err.message : 'Internal server error',
-  });
+  const body = { error: status < 500 ? err.message || 'Bad request' : 'Internal server error' };
+  if (!config.isProd && status >= 500) body.detail = err.message;
+
+  res.status(status).json(body);
+};
+
+/**
+ * 404 handler for unknown API routes — keeps responses consistent.
+ */
+export const notFoundHandler = (req, res) => {
+  res.status(404).json({ error: 'Not found' });
 };

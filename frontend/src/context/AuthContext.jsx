@@ -1,63 +1,51 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { api, getStoredToken, setStoredToken, setUnauthorizedHandler } from '../services/api';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(getStoredToken());
   const [loading, setLoading] = useState(false);
-  const [initializing, setInitializing] = useState(!!localStorage.getItem('token'));
+  const [initializing, setInitializing] = useState(!!getStoredToken());
 
-  // On mount: if a stored token exists, fetch the current user to rehydrate state
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+  }, []);
+
+  // Wire 401 -> logout once. The api helper triggers this on any 401 response.
+  useEffect(() => {
+    setUnauthorizedHandler(() => logout());
+    return () => setUnauthorizedHandler(null);
+  }, [logout]);
+
+  // Keep localStorage in sync. Single source of truth for the token.
+  useEffect(() => {
+    setStoredToken(token);
+  }, [token]);
+
+  // Rehydrate user from token on mount
   useEffect(() => {
     if (!token) {
       setInitializing(false);
       return;
     }
-    fetch('/api/users/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Token invalid');
-        return res.json();
-      })
+    api.get('/users/me', { token, skipAuth: false })
       .then((data) => setUser(data))
       .catch(() => {
-        localStorage.removeItem('token');
+        // Token invalid — clear and stay on login screen
+        setStoredToken(null);
         setToken(null);
       })
       .finally(() => setInitializing(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
-    }
-  }, [token]);
-
-  const parseResponse = async (res) => {
-    const text = await res.text();
-    if (!text) throw new Error('Server nicht erreichbar (leere Antwort)');
-    try {
-      return JSON.parse(text);
-    } catch {
-      console.error('Non-JSON response:', text.slice(0, 200));
-      throw new Error('Server nicht erreichbar – bitte Backend-Logs prüfen');
-    }
-  };
 
   const register = useCallback(async (email, password, name) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name }),
-      });
-      const data = await parseResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Registrierung fehlgeschlagen');
+      const data = await api.post('/auth/register', { email, password, name }, { skipAuth: true });
       setToken(data.token);
       setUser(data.user);
       return data;
@@ -69,24 +57,13 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await parseResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Login fehlgeschlagen');
+      const data = await api.post('/auth/login', { email, password }, { skipAuth: true });
       setToken(data.token);
       setUser(data.user);
       return data;
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  const logout = useCallback(() => {
-    setToken(null);
-    setUser(null);
   }, []);
 
   // Prevent flash of login screen while token is being validated

@@ -1,187 +1,132 @@
-# 🍽️ Family Meal Planner
+# Family Meal Planner
 
-Ein vollständiger Familien-Essensplan mit Einkaufslisten-Integration.
+Self-hosted weekly meal planner with recipes and shopping lists.
 
-**Stack:** React + Express + PostgreSQL + Docker
+**Stack:** React/Vite + Express + PostgreSQL + Docker
 
-## 📋 MVP Phase 1 - Funktionen
+## Quick start
 
-✅ Benutzer-Authentifizierung (JWT)
-✅ Rezept-Verwaltung (CRUD)
-✅ Wochenplan für Mahlzeiten
-✅ Einkaufslisten mit Kategorien
-✅ Multi-Benutzer / Familie-Sharing
-✅ Responsive Mobile + Desktop UI
+The repository ships **two** Docker Compose files:
 
-## 🚀 Schnelleinstieg mit Docker
+| File | Use |
+|---|---|
+| `docker-compose.yml` | Local development only — mounts source for hot reload, exposes Postgres, uses weak default secrets. |
+| `docker-compose.prod.yml` | Production — only the frontend publishes a host port (`8087`); backend and Postgres stay internal. Requires a real `.env`. |
 
-```bash
-# Clone & Setup
-git clone <repo>
-cd family-meal-planner
-
-# Start alle Services (Frontend, Backend, DB)
-docker-compose up -d
-
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:3001
-# Datenbank: localhost:5432
-```
-
-### Ohne Docker (Lokal entwickeln)
+### Development
 
 ```bash
-# Backend
-cd backend
-npm install
-npm run dev        # Läuft auf http://localhost:3001
-
-# Frontend (neues Terminal)
-cd frontend
-npm install
-npm run dev        # Läuft auf http://localhost:3000
+docker compose up -d --build
 ```
 
-## 📚 API Dokumentation
+- Frontend: http://localhost:3029
+- Backend (dev only): http://localhost:3030
+- Postgres (dev only): localhost:5432
 
-### Auth
-```
-POST /api/auth/register      # {email, password, name}
-POST /api/auth/login         # {email, password}
-POST /api/auth/refresh       # {refreshToken}
-POST /api/auth/logout        # {}
-```
+### Production (selfhost)
 
-### Rezepte
-```
-GET    /api/recipes          # Alle Rezepte
-POST   /api/recipes          # Neues Rezept
-GET    /api/recipes/:id      # Rezept-Detail
-PUT    /api/recipes/:id      # Rezept aktualisieren
-DELETE /api/recipes/:id      # Rezept löschen
+```bash
+cp .env.example .env
+# Edit .env: strong POSTGRES_PASSWORD, JWT_SECRET, JWT_REFRESH_SECRET,
+# correct CORS_ORIGIN, COOKIE_SECURE.
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml run --rm backend npm run db:migrate
 ```
 
-### Mahlzeiten
-```
-GET    /api/meals            # Wochenplan
-POST   /api/meals            # Mahlzeit hinzufügen
-PUT    /api/meals/:id        # Mahlzeit aktualisieren
-DELETE /api/meals/:id        # Mahlzeit löschen
-```
+Open http://`<docker-host>`:8087.
 
-### Einkaufslisten
-```
-GET    /api/shopping/lists                # Alle Listen
-POST   /api/shopping/lists                # Neue Liste
-PUT    /api/shopping/lists/:id            # Liste aktualisieren
-DELETE /api/shopping/lists/:id            # Liste löschen
+Full instructions — env reference, migrations, backups, HTTPS, rollback —
+are in **[DEPLOYMENT_PROD.md](DEPLOYMENT_PROD.md)**. Pre-flight checks live
+in **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)**.
 
-GET    /api/shopping/lists/:id/items      # Items einer Liste
-POST   /api/shopping/lists/:id/items      # Item hinzufügen
-PUT    /api/shopping/items/:id            # Item aktualisieren
-DELETE /api/shopping/items/:id            # Item löschen
-```
-
-### Benutzer
-```
-GET    /api/users/me                      # Profil
-PUT    /api/users/me                      # Profil aktualisieren
-GET    /api/users/family/members          # Familienmitglieder
-POST   /api/users/family/invite           # Einladung (Phase 2)
-DELETE /api/users/family/members/:id      # Mitglied entfernen
-```
-
-## 🏗️ Projektstruktur
+## Repository layout
 
 ```
 family-meal-planner/
 ├── backend/
 │   ├── src/
-│   │   ├── models/           # Database Models
-│   │   ├── routes/           # API Routes
-│   │   ├── middleware/       # Auth, Error Handler
-│   │   ├── services/         # Business Logic
-│   │   ├── config/           # DB Config
-│   │   └── app.js            # Express App
-│   ├── package.json
-│   └── Dockerfile
+│   │   ├── config/      env.js (validation), database.js, sequelize-cli.cjs
+│   │   ├── middleware/  auth, validation, rate limiters
+│   │   ├── models/      Sequelize models
+│   │   ├── routes/      auth, recipes, meals, shopping, users, invites
+│   │   ├── services/    auth, invite, email, pdf parser
+│   │   ├── utils/       logger
+│   │   └── app.js
+│   ├── migrations/      sequelize-cli migrations (production schema source of truth)
+│   ├── test/            node:test unit tests
+│   ├── Dockerfile       development image
+│   └── Dockerfile.prod  multi-stage prod image (non-root, tini)
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/            # React Pages
-│   │   ├── components/       # Reusable Components
-│   │   ├── context/          # Auth Context
-│   │   ├── styles/           # CSS
-│   │   ├── services/         # API Calls
+│   │   ├── components/  modals (recipe editor, meal editor, PDF import, invite)
+│   │   ├── context/     AuthContext
+│   │   ├── pages/       Dashboard, Login, Register, Recipes, Meals, Shopping, Family
+│   │   ├── services/    api.js (single fetch wrapper, 401 handling)
 │   │   └── App.jsx
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
+│   ├── nginx.conf       production Nginx config (security headers, /api proxy)
+│   ├── Dockerfile       development (Vite dev server)
+│   └── Dockerfile.prod  multi-stage build → Nginx
 │
-└── docker-compose.yml
+├── scripts/
+│   ├── backup-db.{sh,ps1}   gzip pg_dump via docker compose exec
+│   └── restore-db.{sh,ps1}
+│
+├── docker-compose.yml          dev
+├── docker-compose.prod.yml     prod
+├── .env.example                template; never commit a real .env
+├── DEPLOYMENT_PROD.md
+└── DEPLOYMENT_CHECKLIST.md
 ```
 
-## 🛠️ Entwicklung
+## API summary
 
-### Environment Variablen
+All routes under `/api`. Auth uses bearer tokens.
 
-Backend: `backend/.env`
-```
-DB_HOST=postgres
-DB_PORT=5432
-DB_NAME=family_meal_planner
-DB_USER=planner_user
-DB_PASSWORD=secure_password_123
-JWT_SECRET=your-super-secret-jwt-key
-CORS_ORIGIN=http://localhost:3000
-```
+| Verb | Path | Notes |
+|---|---|---|
+| GET | `/health` | liveness, no DB call |
+| GET | `/ready` | readiness, includes DB ping |
+| POST | `/auth/register` | rate-limited |
+| POST | `/auth/login` | rate-limited |
+| POST | `/auth/refresh` | rate-limited |
+| POST | `/auth/logout` | stateless |
+| GET/POST/PUT/DELETE | `/recipes[/:id]` | family-scoped |
+| POST | `/recipes/import/pdf` | multipart, 10 MB max |
+| GET/POST/PUT/DELETE | `/meals[/:id]` | family-scoped |
+| GET/POST/PUT/DELETE | `/shopping/lists[/:id]` | family-scoped |
+| GET/POST/PUT/DELETE | `/shopping/[lists/:list_id/items|items/:id]` | IDOR-safe |
+| GET/PUT | `/users/me` | self only |
+| GET | `/users/family/members` | family-scoped |
+| POST/GET/DELETE | `/users/family/invite[s][/:id]` | rate-limited |
+| GET/POST | `/invites/:token[/accept|/decline]` | public, rate-limited |
 
-## 🧪 Testen der API
+## Security posture
+
+- Strict env validation on startup; production aborts on missing or weak secrets.
+- Helmet, `x-powered-by` off, CORS allowlist, body size capped.
+- Global API rate limit + strict auth-endpoint limit. `trust proxy` configurable for reverse-proxy deployments.
+- All write endpoints whitelist input via `express-validator`.
+- All resource lookups scope by `family_id` / list ownership; no IDOR.
+- bcrypt cost factor 12; minimum password length 12.
+- JWT signed with separate access/refresh secrets, includes issuer/audience claims.
+- Production never auto-syncs DB schema; migrations are mandatory.
+- Backend runs as non-root with `tini`; Nginx drops capabilities and runs read-only-friendly.
+- Logger redacts password / token / authorization keys.
+
+## Testing
 
 ```bash
-# Mit curl
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
+# Backend
+cd backend && npm ci && npm test
 
-# Login
-curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-
-# Mit Token Rezepte holen
-curl -H "Authorization: Bearer <your-token>" \
-  http://localhost:3001/api/recipes
+# Frontend build
+cd frontend && npm ci && npm run build
 ```
 
-## 📦 Phase 2+ (Geplant)
+CI runs both, plus `docker compose config` validation and a production
+image build, on every PR and push to `main` / `main-update`.
 
-- Email-Einladungen
-- Smart Recommendations (AI-basiert)
-- Recipe Importing (Hello Fresh, Chefkoch, REWE)
-- Notifications
-- Public REST API
-- Advanced Analytics
+## License
 
-## 🔒 Sicherheit
-
-- Passwörter gehashed mit bcryptjs
-- JWT Token-basierte Auth (24h expiration)
-- CORS konfigurierbar
-- Environment Variables für Secrets
-
-## 🐳 Production Deployment
-
-1. `.env` mit Production-Secrets aktualisieren
-2. `docker-compose build`
-3. `docker-compose up -d`
-4. HAProxy konfigurieren (optional)
-5. SSL mit Let's Encrypt (optional)
-
-## 📝 Lizenz
-
-MIT - Free to use
-
----
-
-**Made with ❤️ by Claude Code**
+MIT

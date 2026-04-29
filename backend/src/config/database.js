@@ -1,21 +1,31 @@
 import { Sequelize } from 'sequelize';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import config from './env.js';
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'family_meal_planner',
-  process.env.DB_USER || 'planner_user',
-  process.env.DB_PASSWORD || 'password',
+  config.DB.name,
+  config.DB.user,
+  config.DB.password,
   {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+    host: config.DB.host,
+    port: config.DB.port,
     dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    logging: config.NODE_ENV === 'development' && config.LOG_LEVEL === 'debug'
+      ? (msg) => console.debug(msg)
+      : false,
     define: {
       timestamps: true,
       underscored: true,
     },
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+    dialectOptions: config.DB.ssl
+      ? { ssl: { require: true, rejectUnauthorized: false } }
+      : {},
+    retry: { max: 3 },
   }
 );
 

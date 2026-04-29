@@ -1,3 +1,8 @@
+# Development Compose — DO NOT USE IN PRODUCTION.
+# This file mounts source for hot reload, exposes Postgres on the host, and uses
+# weak default secrets that are only acceptable for local development.
+# For production, use docker-compose.prod.yml.
+
 services:
   postgres:
     image: postgres:15-alpine
@@ -5,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: family_meal_planner
       POSTGRES_USER: planner_user
-      POSTGRES_PASSWORD: secure_password_123
+      POSTGRES_PASSWORD: dev_password_only
     ports:
       - "5432:5432"
     volumes:
@@ -28,17 +33,21 @@ services:
       DB_PORT: 5432
       DB_NAME: family_meal_planner
       DB_USER: planner_user
-      DB_PASSWORD: secure_password_123
-      # Change these secrets before production deployment
-      JWT_SECRET: dev-jwt-secret-replace-before-production-use
-      JWT_REFRESH_SECRET: dev-refresh-secret-replace-before-production-use
+      DB_PASSWORD: dev_password_only
+      # Dev-only secrets. Production loads its own from .env via docker-compose.prod.yml.
+      JWT_SECRET: dev-jwt-secret-not-for-production-use-min-32-chars-x
+      JWT_REFRESH_SECRET: dev-refresh-secret-not-for-production-use-min-32-chars
       JWT_EXPIRES_IN: 24h
       JWT_REFRESH_EXPIRES_IN: 7d
       CORS_ORIGIN: http://localhost:3029
       FRONTEND_URL: http://localhost:3029
-      SMTP_SERVICE: gmail
-      SMTP_USER: your-email@gmail.com
-      SMTP_PASSWORD: your-app-password
+      COOKIE_SECURE: "false"
+      COOKIE_SAME_SITE: lax
+      SMTP_SERVICE: ${SMTP_SERVICE:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      TRUST_PROXY: loopback
+      LOG_LEVEL: debug
     ports:
       - "3030:3001"
     depends_on:
@@ -46,6 +55,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend/src:/app/src
+      - ./backend/migrations:/app/migrations
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/health || exit 1"]
       interval: 10s

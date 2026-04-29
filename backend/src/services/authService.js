@@ -2,21 +2,34 @@ import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import sequelize from '../config/database.js';
+import config from '../config/env.js';
 import { User, Family } from '../models/index.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-insecure-secret';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'dev-only-insecure-refresh-secret';
-
 const signToken = (payload) =>
-  jwt.sign(payload, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '24h' });
+  jwt.sign(payload, config.JWT.secret, {
+    expiresIn: config.JWT.expiresIn,
+    issuer: config.JWT.issuer,
+    audience: config.JWT.audience,
+  });
 
 const signRefreshToken = (payload) =>
-  jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' });
+  jwt.sign(payload, config.JWT.refreshSecret, {
+    expiresIn: config.JWT.refreshExpiresIn,
+    issuer: config.JWT.issuer,
+    audience: config.JWT.audience,
+  });
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 12;
 
 export const registerUser = async (email, password, name) => {
   if (!email || !password || !name) throw new Error('All fields required');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Invalid email format');
-  if (password.length < 8) throw new Error('Password must be at least 8 characters');
+  if (!EMAIL_RE.test(email)) throw new Error('Invalid email format');
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    throw new Error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+  }
+  if (password.length > 256) throw new Error('Password too long');
+  if (typeof name !== 'string' || name.trim().length === 0) throw new Error('Name required');
   if (name.length > 100) throw new Error('Name too long');
 
   const existing = await User.findOne({ where: { email: email.toLowerCase() } });
@@ -34,7 +47,7 @@ export const registerUser = async (email, password, name) => {
       id: uuidv4(),
       email: email.toLowerCase(),
       password_hash: hashedPassword,
-      name,
+      name: name.trim(),
       family_id: family.id,
       role: 'owner',
     }, { transaction: t });
@@ -83,7 +96,11 @@ export const loginUser = async (email, password) => {
 
 export const refreshUserToken = (token) => {
   try {
-    const decoded = jwt.verify(token, JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(token, config.JWT.refreshSecret, {
+      issuer: config.JWT.issuer,
+      audience: config.JWT.audience,
+    });
+    // Re-issue an access token. The new token does not extend the refresh window.
     return signToken({ id: decoded.id });
   } catch {
     throw new Error('Invalid refresh token');

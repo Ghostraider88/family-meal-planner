@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: var(--s3) var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-bg);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--s4);
+}
+
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recipesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+}
+
+.empty {
+  text-align: center;
+  color: var(--fg-muted);
+  padding: var(--s8);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--s4);
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recipeCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+.recipeCard:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.cardContent h3 {
+  margin: 0 0 var(--s3) 0;
+  font-size: 16px;
+  color: var(--fg);
+}
+
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.tag {
+  background: var(--primary-bg);
+  color: var(--primary);
+  padding: var(--s2) var(--s3);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: var(--s2);
+  border-radius: var(--r-sm);
+  transition: background 0.2s;
+  align-self: flex-end;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+}

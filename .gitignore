@@ -8,8 +8,20 @@ coverage/
 .env
 .env.local
 .env.*.local
+.env.production
 backend/.env
 frontend/.env
+
+# Local secrets
+secrets/
+*.pem
+*.key
+*.crt
+
+# Backups
+backups/
+*.sql.gz
+*.dump
 
 # Editor/OS artifacts
 *.log

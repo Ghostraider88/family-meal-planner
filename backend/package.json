@@ -7,7 +7,13 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
-    "test": "echo 'Tests coming soon'"
+    "test": "node --test --test-reporter=spec test",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:status": "sequelize-cli db:migrate:status",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:seed:undo": "sequelize-cli db:seed:undo:all"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -26,5 +32,9 @@
     "pg": "^8.10.0",
     "sequelize": "^6.35.2",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.5",
+    "supertest": "^7.2.2"
   }
 }

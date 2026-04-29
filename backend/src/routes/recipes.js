@@ -1,9 +1,23 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { Recipe } from '../models/index.js';
+import { parsePdfRecipe } from '../services/pdfParserService.js';
 
 const router = express.Router();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files allowed'));
+    }
+  },
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
+
 router.use(authenticate);
 
 router.get('/', async (req, res, next) => {
@@ -91,6 +105,25 @@ router.delete('/:id', async (req, res, next) => {
     res.json({ message: 'Recipe deleted' });
   } catch (err) {
     next(err);
+  }
+});
+
+// PDF Import endpoint
+router.post('/import/pdf', upload.single('pdf'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No PDF file provided' });
+    }
+
+    const parsedRecipe = await parsePdfRecipe(req.file.buffer);
+
+    // Return parsed recipe for preview/editing
+    res.json({
+      preview: parsedRecipe,
+      message: 'PDF parsed successfully. Review and edit before saving.',
+    });
+  } catch (err) {
+    res.status(400).json({ error: `PDF parsing error: ${err.message}` });
   }
 });
 

@@ -13,7 +13,7 @@ COPY . .
 ENV VITE_API_URL=/api
 RUN npm run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
 
 # Drop default config; ours is mounted from build context
 RUN rm /etc/nginx/conf.d/default.conf

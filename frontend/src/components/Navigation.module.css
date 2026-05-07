@@ -98,6 +98,10 @@
 @media (min-width: 768px) {
   .sidebar {
     display: flex;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    z-index: 50;
   }
 }
 

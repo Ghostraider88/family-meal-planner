@@ -6,12 +6,11 @@
   background: var(--bg);
 }
 
-/* Desktop layout with sidebar */
+/* Desktop: Header at top, then sidebar + content side by side */
 @media (min-width: 768px) {
   .container {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    grid-template-rows: 64px 1fr;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 
@@ -22,39 +21,27 @@
   display: flex;
   flex-direction: column;
   background: var(--bg);
+  width: 100%;
 
   /* Mobile: account for header + bottom nav */
   padding: var(--s6);
   padding-bottom: calc(70px + var(--s6));
+  order: 3;
 }
 
 @media (min-width: 768px) {
   .content {
-    grid-column: 2;
-    grid-row: 2;
-    display: flex;
-    flex-direction: column;
+    width: calc(100% - 80px);
     padding: var(--s6);
     padding-bottom: var(--s6);
-    overflow-y: auto;
-    overflow-x: hidden;
+    order: 3;
+    margin-top: 64px;
   }
 }
 
 .contentWrapper {
-  max-width: 1000px;
+  flex: 1;
   width: 100%;
-  padding: var(--s6);
+  padding: 0;
   background: var(--bg);
-
-  @media (max-width: 767px) {
-    padding: 0;
-  }
-}
-
-@media (min-width: 768px) {
-  .contentWrapper {
-    grid-column: 2;
-    padding: var(--s8);
-  }
 }

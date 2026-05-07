@@ -13,8 +13,8 @@
 
 @media (min-width: 768px) {
   .header {
-    grid-column: 1 / -1;
-    grid-row: 1;
+    width: 100%;
+    order: 1;
   }
 }
 

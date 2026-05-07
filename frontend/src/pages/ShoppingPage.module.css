@@ -19,7 +19,7 @@
 }
 
 .form {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--s5);
@@ -40,15 +40,14 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 14px;
-  background: var(--white);
+  background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-body);
 }
 
 .form input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(56, 160, 94, 0.1);
 }
 
 .form button {
@@ -80,7 +79,7 @@
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--grey-80);
+  color: var(--fg-muted);
 }
 
 .listsTabs {
@@ -90,7 +89,7 @@
 }
 
 .listTab {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: var(--s3) var(--s4);
@@ -112,7 +111,7 @@
 
 .listTab.active {
   background: var(--primary);
-  color: var(--white);
+  color: white;
   border-color: var(--primary);
   font-weight: 600;
 }
@@ -139,7 +138,7 @@
 }
 
 .addItemForm {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--s4);
@@ -153,9 +152,8 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 14px;
-  background: var(--white);
+  background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-body);
   flex: 1;
 }
 
@@ -165,13 +163,13 @@
 
 .addItemForm input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(56, 160, 94, 0.1);
 }
 
 .addBtn {
   background: var(--primary);
-  color: var(--white);
+  color: white;
   border: none;
   border-radius: var(--r-md);
   padding: var(--s3);
@@ -187,7 +185,7 @@
 }
 
 .addBtn:hover {
-  background: #0099CC;
+  background: var(--primary-dark);
   transform: scale(1.05);
   box-shadow: var(--shadow-md);
 }
@@ -200,9 +198,9 @@
 
 .empty {
   text-align: center;
-  color: var(--grey-80);
+  color: var(--fg-muted);
   padding: var(--s6);
-  background: var(--white);
+  background: var(--bg-card);
   border: 2px dashed var(--border);
   border-radius: var(--r-lg);
   font-weight: 500;
@@ -212,7 +210,7 @@
   display: flex;
   align-items: center;
   gap: var(--s4);
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--s4);
@@ -231,7 +229,7 @@
 
 .item.checked .itemName {
   text-decoration: line-through;
-  color: var(--grey-80);
+  color: var(--fg-muted);
 }
 
 .checkbox {
@@ -258,7 +256,7 @@
 
 .itemQuantity {
   font-size: 13px;
-  color: var(--grey-80);
+  color: var(--fg-muted);
 }
 
 .deleteBtn {
@@ -273,6 +271,6 @@
 }
 
 .deleteBtn:hover {
-  background: #FFE5E5;
+  background: #fee2e2;
   transform: scale(1.05);
 }

@@ -4,7 +4,7 @@
   align-items: flex-end;
   justify-content: space-around;
   height: 70px;
-  background: var(--white);
+  background: var(--bg-card);
   border-top: 1px solid var(--border);
   position: fixed;
   bottom: 0;
@@ -30,9 +30,9 @@
   padding: var(--s3) var(--s2);
   background: none;
   border: none;
-  color: var(--grey-80);
+  color: var(--fg-subtle);
   font-family: var(--font-body);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 11px;
   letter-spacing: 0.3px;
   cursor: pointer;
@@ -50,7 +50,7 @@
 
 .navIcon {
   width: 36px;
-  height: 36px;
+  height: 32px;
   border-radius: var(--r-md);
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@
   align-items: center;
   width: 80px;
   height: calc(100vh - 64px);
-  background: var(--white);
+  background: var(--bg-card);
   border-right: 1px solid var(--border);
   padding: var(--s4) 0;
   gap: var(--s4);
@@ -108,7 +108,7 @@
   background: none;
   border: none;
   border-left: 4px solid transparent;
-  color: var(--grey-80);
+  color: var(--fg-subtle);
   font-size: 28px;
   cursor: pointer;
   display: flex;

@@ -19,7 +19,7 @@
 }
 
 .form {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--s6);
@@ -48,16 +48,15 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 14px;
-  background: var(--white);
+  background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-body);
 }
 
 .formGroup input:focus,
 .formGroup select:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 197, 255, 0.1);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(56, 160, 94, 0.1);
 }
 
 .mealsList {
@@ -68,9 +67,9 @@
 
 .empty {
   text-align: center;
-  color: var(--grey-80);
+  color: var(--fg-muted);
   padding: var(--s8);
-  background: var(--white);
+  background: var(--bg-card);
   border: 2px dashed var(--border);
   border-radius: var(--r-lg);
   font-weight: 500;
@@ -94,7 +93,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--s4) var(--s5);
@@ -143,6 +142,6 @@
 }
 
 .deleteBtn:hover {
-  background: #FFE5E5;
+  background: #fee2e2;
   transform: scale(1.05);
 }

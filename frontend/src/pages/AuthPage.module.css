@@ -5,13 +5,13 @@
   min-height: 100vh;
   width: 100%;
   padding: var(--s6);
-  background: linear-gradient(135deg, var(--light-blue) 0%, var(--grey-5) 100%);
+  background: linear-gradient(135deg, var(--green-100) 0%, var(--cream-100) 100%);
 }
 
 .card {
   width: 100%;
   max-width: 420px;
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: var(--r-xl);
   padding: var(--s8);
   box-shadow: var(--shadow-lg);
@@ -47,14 +47,14 @@
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
-  color: var(--grey-80);
+  color: var(--fg-muted);
 }
 
 .error {
-  background: rgba(255, 0, 72, 0.08);
-  color: var(--signal-red);
+  background: rgba(229, 56, 59, 0.08);
+  color: var(--danger);
   padding: var(--s4) var(--s5);
-  border: 1px solid rgba(255, 0, 72, 0.2);
+  border: 1px solid rgba(229, 56, 59, 0.2);
   border-radius: var(--r-md);
   margin-bottom: var(--s5);
   font-size: 14px;
@@ -90,7 +90,7 @@
 .footer p {
   font-size: 14px;
   font-weight: 400;
-  color: var(--grey-80);
+  color: var(--fg-muted);
 }
 
 .link {
@@ -101,5 +101,5 @@
 }
 
 .link:hover {
-  color: #0099CC;
+  color: var(--primary-dark);
 }

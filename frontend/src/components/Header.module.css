@@ -11,6 +11,13 @@
   box-shadow: var(--shadow-sm);
 }
 
+@media (min-width: 768px) {
+  .header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}
+
 .left {
   display: flex;
   align-items: center;

@@ -98,6 +98,8 @@
 @media (min-width: 768px) {
   .sidebar {
     display: flex;
+    grid-column: 1;
+    grid-row: 2;
   }
 }
 

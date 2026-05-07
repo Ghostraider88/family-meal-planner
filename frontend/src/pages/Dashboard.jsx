@@ -6,7 +6,7 @@ import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [meals, setMeals] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [shoppingLists, setShoppingLists] = useState([]);
@@ -21,9 +21,9 @@ export default function Dashboard() {
       try {
         console.log('Fetching dashboard data...');
         const [mealsRes, recipesRes, shoppingRes] = await Promise.all([
-          api.get(`/meals?weekStart=${weekStart}`),
-          api.get('/recipes'),
-          api.get('/shopping/lists'),
+          api.get(`/meals?weekStart=${weekStart}`, { token }),
+          api.get('/recipes', { token }),
+          api.get('/shopping/lists', { token }),
         ]);
         console.log('Dashboard data loaded:', { meals: mealsRes?.length, recipes: recipesRes?.length, lists: shoppingRes?.length });
         setMeals(mealsRes || []);
@@ -35,8 +35,10 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
+    if (token) {
+      fetchData();
+    }
+  }, [token]);
 
   const getTodayMeals = () => {
     const today = new Date().toISOString().split('T')[0];

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
 import styles from './MealsPage.module.css';
 
 export default function MealsPage() {
+  const { token } = useContext(AuthContext);
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -14,12 +16,14 @@ export default function MealsPage() {
   });
 
   useEffect(() => {
-    fetchMeals();
-  }, []);
+    if (token) {
+      fetchMeals();
+    }
+  }, [token]);
 
   const fetchMeals = async () => {
     try {
-      const data = await api.get('/meals');
+      const data = await api.get('/meals', { token });
       setMeals(data || []);
     } catch (err) {
       console.error('Failed to fetch meals:', err);
@@ -31,7 +35,7 @@ export default function MealsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/meals', formData);
+      await api.post('/meals', formData, { token });
       fetchMeals();
       setShowForm(false);
       setFormData({ date: selectedDate, meal_type: 'breakfast', custom_name: '' });
@@ -43,7 +47,7 @@ export default function MealsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Mahlzeit löschen?')) return;
     try {
-      await api.delete(`/meals/${id}`);
+      await api.delete(`/meals/${id}`, { token });
       fetchMeals();
     } catch (err) {
       console.error('Failed to delete meal:', err);

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
 import styles from './ShoppingPage.module.css';
 
 export default function ShoppingPage() {
+  const { token } = useContext(AuthContext);
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNewList, setShowNewList] = useState(false);
@@ -11,12 +13,14 @@ export default function ShoppingPage() {
   const [itemForm, setItemForm] = useState({ name: '', quantity: '', unit: '' });
 
   useEffect(() => {
-    fetchLists();
-  }, []);
+    if (token) {
+      fetchLists();
+    }
+  }, [token]);
 
   const fetchLists = async () => {
     try {
-      const data = await api.get('/shopping/lists');
+      const data = await api.get('/shopping/lists', { token });
       setLists(data || []);
       if (data.length > 0 && !selectedListId) {
         setSelectedListId(data[0].id);
@@ -32,7 +36,7 @@ export default function ShoppingPage() {
     e.preventDefault();
     if (!newListName.trim()) return;
     try {
-      await api.post('/shopping/lists', { name: newListName });
+      await api.post('/shopping/lists', { name: newListName }, { token });
       fetchLists();
       setNewListName('');
       setShowNewList(false);
@@ -45,7 +49,7 @@ export default function ShoppingPage() {
     e.preventDefault();
     if (!selectedListId || !itemForm.name.trim()) return;
     try {
-      await api.post(`/shopping/lists/${selectedListId}/items`, itemForm);
+      await api.post(`/shopping/lists/${selectedListId}/items`, itemForm, { token });
       fetchLists();
       setItemForm({ name: '', quantity: '', unit: '' });
     } catch (err) {
@@ -55,7 +59,7 @@ export default function ShoppingPage() {
 
   const handleToggleItem = async (itemId, checked) => {
     try {
-      await api.put(`/shopping/items/${itemId}`, { checked: !checked });
+      await api.put(`/shopping/items/${itemId}`, { checked: !checked }, { token });
       fetchLists();
     } catch (err) {
       console.error('Failed to update item:', err);
@@ -64,7 +68,7 @@ export default function ShoppingPage() {
 
   const handleDeleteItem = async (itemId) => {
     try {
-      await api.delete(`/shopping/items/${itemId}`);
+      await api.delete(`/shopping/items/${itemId}`, { token });
       fetchLists();
     } catch (err) {
       console.error('Failed to delete item:', err);
@@ -74,7 +78,7 @@ export default function ShoppingPage() {
   const handleDeleteList = async (listId) => {
     if (!confirm('Liste löschen?')) return;
     try {
-      await api.delete(`/shopping/lists/${listId}`);
+      await api.delete(`/shopping/lists/${listId}`, { token });
       fetchLists();
       if (selectedListId === listId) {
         setSelectedListId(null);

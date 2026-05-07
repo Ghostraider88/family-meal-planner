@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { api } from '../services/api';
 import styles from './RecipesPage.module.css';
 
 export default function RecipesPage() {
+  const { token } = useContext(AuthContext);
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -14,12 +16,14 @@ export default function RecipesPage() {
   });
 
   useEffect(() => {
-    fetchRecipes();
-  }, []);
+    if (token) {
+      fetchRecipes();
+    }
+  }, [token]);
 
   const fetchRecipes = async () => {
     try {
-      const data = await api.get('/recipes');
+      const data = await api.get('/recipes', { token });
       setRecipes(data || []);
     } catch (err) {
       console.error('Failed to fetch recipes:', err);
@@ -31,7 +35,7 @@ export default function RecipesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/recipes', formData);
+      await api.post('/recipes', formData, { token });
       fetchRecipes();
       setShowForm(false);
       setFormData({ name: '', time_minutes: '', servings: '', difficulty: 'medium' });
@@ -43,7 +47,7 @@ export default function RecipesPage() {
   const handleDelete = async (id) => {
     if (!confirm('Rezept löschen?')) return;
     try {
-      await api.delete(`/recipes/${id}`);
+      await api.delete(`/recipes/${id}`, { token });
       fetchRecipes();
     } catch (err) {
       console.error('Failed to delete recipe:', err);

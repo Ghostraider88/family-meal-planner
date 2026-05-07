@@ -1,0 +1,224 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s6);
+}
+
+.greeting {
+  margin-bottom: var(--s4);
+}
+
+.greeting h1 {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--fg);
+  margin-bottom: var(--s3);
+}
+
+.greeting p {
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+
+.todayStrip {
+  background: linear-gradient(135deg, var(--green-600) 0%, var(--green-400) 100%);
+  border-radius: var(--r-lg);
+  padding: var(--s5) var(--s6);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.todayStrip h2 {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: var(--s4);
+  color: white;
+}
+
+.mealsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.mealItem {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--r-md);
+  backdrop-filter: blur(10px);
+}
+
+.mealType {
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 70px;
+  color: white;
+}
+
+.mealName {
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1;
+  color: white;
+}
+
+.actions {
+  margin-top: var(--s6);
+}
+
+.actions h2 {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: var(--s5);
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s4);
+}
+
+@media (min-width: 768px) {
+  .actionGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.actionCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+}
+
+.actionCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.actionCard:active {
+  transform: scale(0.98);
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 14px;
+  font-family: var(--font-display);
+  color: var(--fg);
+}
+
+.count {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.week {
+  margin-top: var(--s6);
+}
+
+.weekHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s5);
+}
+
+.weekHeader h2 {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.seeAll {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.seeAll:hover {
+  color: var(--primary-dark);
+}
+
+.daysList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+}
+
+.dayRow {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s4) var(--s5);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--s4);
+  align-items: center;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.dayRow:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.dayInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayName {
+  font-weight: 700;
+  font-size: 15px;
+  font-family: var(--font-display);
+  color: var(--fg);
+}
+
+.dayDate {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+
+.mealPreview {
+  display: flex;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.mealPreview em {
+  font-style: italic;
+  color: var(--fg-muted);
+}

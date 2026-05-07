@@ -1,12 +1,14 @@
-import { useContext, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
+import { api } from '../services/api';
+import styles from './ShoppingPage.module.css';
 
-const ShoppingPage = () => {
-  const { token } = useContext(AuthContext);
+export default function ShoppingPage() {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showNewList, setShowNewList] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [selectedListId, setSelectedListId] = useState(null);
+  const [itemForm, setItemForm] = useState({ name: '', quantity: '', unit: '' });
 
   useEffect(() => {
     fetchLists();
@@ -14,81 +16,202 @@ const ShoppingPage = () => {
 
   const fetchLists = async () => {
     try {
-      const res = await fetch('/api/shopping/lists', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setLists(data);
+      const data = await api.get('/shopping/lists');
+      setLists(data || []);
+      if (data.length > 0 && !selectedListId) {
+        setSelectedListId(data[0].id);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Failed to fetch lists:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddList = async (e) => {
+  const handleCreateList = async (e) => {
     e.preventDefault();
+    if (!newListName.trim()) return;
     try {
-      const res = await fetch('/api/shopping/lists', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newListName }),
-      });
-      if (!res.ok) throw new Error('Failed to add list');
-      const data = await res.json();
-      setLists([...lists, data]);
+      await api.post('/shopping/lists', { name: newListName });
+      fetchLists();
       setNewListName('');
+      setShowNewList(false);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to create list:', err);
     }
   };
 
-  return (
-    <div style={{ padding: '32px 16px', minHeight: '100vh', backgroundColor: '#F0F2F9' }}>
-      <Link to="/dashboard">← Zurück</Link>
-      <h1>🛒 Einkaufslisten</h1>
+  const handleAddItem = async (e) => {
+    e.preventDefault();
+    if (!selectedListId || !itemForm.name.trim()) return;
+    try {
+      await api.post(`/shopping/lists/${selectedListId}/items`, itemForm);
+      fetchLists();
+      setItemForm({ name: '', quantity: '', unit: '' });
+    } catch (err) {
+      console.error('Failed to add item:', err);
+    }
+  };
 
-      <div style={{ marginTop: '32px' }}>
-        <h2>Neue Liste erstellen</h2>
-        <form onSubmit={handleAddList} style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-          <input
-            type="text"
-            placeholder="Listenname"
-            value={newListName}
-            onChange={(e) => setNewListName(e.target.value)}
-            required
-            style={{ flex: 1, padding: '12px', border: '1px solid #E3E6EF', borderRadius: '8px' }}
-          />
-          <button type="submit" style={{ padding: '12px 24px', background: '#00C5FF', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+  const handleToggleItem = async (itemId, checked) => {
+    try {
+      await api.put(`/shopping/items/${itemId}`, { checked: !checked });
+      fetchLists();
+    } catch (err) {
+      console.error('Failed to update item:', err);
+    }
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    try {
+      await api.delete(`/shopping/items/${itemId}`);
+      fetchLists();
+    } catch (err) {
+      console.error('Failed to delete item:', err);
+    }
+  };
+
+  const handleDeleteList = async (listId) => {
+    if (!confirm('Liste löschen?')) return;
+    try {
+      await api.delete(`/shopping/lists/${listId}`);
+      fetchLists();
+      if (selectedListId === listId) {
+        setSelectedListId(null);
+      }
+    } catch (err) {
+      console.error('Failed to delete list:', err);
+    }
+  };
+
+  const selectedList = lists.find((l) => l.id === selectedListId);
+  const items = (selectedList?.ShoppingItems || selectedList?.shoppingItems || []);
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>🛒 Einkaufsliste</h1>
+        <button
+          className="btn-primary"
+          onClick={() => setShowNewList(!showNewList)}
+        >
+          {showNewList ? 'Abbrechen' : '+ Liste'}
+        </button>
+      </div>
+
+      {showNewList && (
+        <form onSubmit={handleCreateList} className={styles.form}>
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              placeholder="Listenname..."
+              autoFocus
+              required
+            />
+          </div>
+          <button type="submit" className="btn-primary">
             Erstellen
           </button>
         </form>
-      </div>
+      )}
 
-      {loading ? (
-        <p>Lädt...</p>
-      ) : (
-        <div style={{ marginTop: '32px' }}>
-          <h2>Meine Listen ({lists.length})</h2>
-          {lists.length === 0 ? (
-            <p>Keine Listen vorhanden. Erstellen Sie eine oben!</p>
+      <div className={styles.content}>
+        <div className={styles.listsSidebar}>
+          <h3>Listen</h3>
+          {loading ? (
+            <p>Lädt...</p>
+          ) : lists.length === 0 ? (
+            <p className={styles.empty}>Keine Listen vorhanden</p>
           ) : (
-            <ul>
+            <div className={styles.listsTabs}>
               {lists.map((list) => (
-                <li key={list.id} style={{ marginBottom: '12px', padding: '12px', background: 'white', borderRadius: '8px' }}>
-                  {list.name}
-                </li>
+                <button
+                  key={list.id}
+                  className={`${styles.listTab} ${selectedListId === list.id ? styles.active : ''}`}
+                  onClick={() => setSelectedListId(list.id)}
+                >
+                  <span>{list.name}</span>
+                  <button
+                    className={styles.deleteListBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteList(list.id);
+                    }}
+                  >
+                    ✕
+                  </button>
+                </button>
               ))}
-            </ul>
+            </div>
           )}
         </div>
-      )}
+
+        {selectedList && (
+          <div className={styles.listContent}>
+            <form onSubmit={handleAddItem} className={styles.addItemForm}>
+              <input
+                type="text"
+                value={itemForm.name}
+                onChange={(e) => setItemForm({ ...itemForm, name: e.target.value })}
+                placeholder="Artikel hinzufügen..."
+                required
+              />
+              <input
+                type="number"
+                value={itemForm.quantity}
+                onChange={(e) => setItemForm({ ...itemForm, quantity: e.target.value })}
+                placeholder="Menge"
+                step="0.01"
+              />
+              <input
+                type="text"
+                value={itemForm.unit}
+                onChange={(e) => setItemForm({ ...itemForm, unit: e.target.value })}
+                placeholder="Einheit"
+              />
+              <button type="submit" className={styles.addBtn}>
+                +
+              </button>
+            </form>
+
+            <div className={styles.itemsList}>
+              {items.length === 0 ? (
+                <p className={styles.empty}>Keine Artikel in dieser Liste</p>
+              ) : (
+                items.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`${styles.item} ${item.checked ? styles.checked : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.checked || false}
+                      onChange={() => handleToggleItem(item.id, item.checked)}
+                      className={styles.checkbox}
+                    />
+                    <div className={styles.itemInfo}>
+                      <span className={styles.itemName}>{item.name}</span>
+                      {item.quantity && (
+                        <span className={styles.itemQuantity}>
+                          {item.quantity} {item.unit || ''}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => handleDeleteItem(item.id)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default ShoppingPage;
+}

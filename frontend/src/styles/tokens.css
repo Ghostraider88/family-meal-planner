@@ -1,0 +1,246 @@
+/* ============================================================
+   DESIGN TOKENS — FamilyMealPlanner
+   ============================================================ */
+:root {
+  /* Brand colors */
+  --green-50:   #f0faf4;
+  --green-100:  #d6f2e0;
+  --green-200:  #a8e0bc;
+  --green-400:  #52b87a;
+  --green-500:  #38a05e;
+  --green-600:  #2d8a4e;
+  --green-700:  #1f6337;
+
+  --orange-50:  #fff7ed;
+  --orange-100: #ffe4c4;
+  --orange-300: #ffa94d;
+  --orange-400: #ff8c2a;
+  --orange-500: #f27108;
+
+  --cream-50:   #fdfaf5;
+  --cream-100:  #f6f0e4;
+  --cream-200:  #ede4d3;
+
+  --neutral-0:   #ffffff;
+  --neutral-50:  #f9f9f8;
+  --neutral-100: #f0efec;
+  --neutral-200: #e3e1db;
+  --neutral-400: #a8a49c;
+  --neutral-600: #6b6760;
+  --neutral-800: #2e2b26;
+  --neutral-900: #1a1814;
+
+  /* Semantic */
+  --bg:           var(--cream-50);
+  --bg-card:      var(--neutral-0);
+  --bg-subtle:    var(--neutral-50);
+  --bg-muted:     var(--neutral-100);
+
+  --fg:           var(--neutral-900);
+  --fg-muted:     var(--neutral-600);
+  --fg-subtle:    var(--neutral-400);
+
+  --primary:      var(--green-500);
+  --primary-dark: var(--green-600);
+  --primary-bg:   var(--green-50);
+  --primary-light:var(--green-100);
+
+  --accent:       var(--orange-400);
+  --accent-bg:    var(--orange-50);
+
+  --border:       var(--neutral-200);
+  --border-focus: var(--green-400);
+
+  --danger:       #e5383b;
+  --success:      var(--green-500);
+
+  /* Typography */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* Spacing */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+  --s12: 48px;
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.11), 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 { font-size: 26px; }
+h2 { font-size: 22px; }
+h3 { font-size: 18px; }
+
+/* Links */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* ============================================================
+   INPUTS & FORMS
+   ============================================================ */
+input, textarea, select {
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  color: var(--fg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(82, 184, 122, 0.1);
+}
+
+input::placeholder {
+  color: var(--fg-subtle);
+}
+
+/* Buttons */
+button {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: var(--s3) var(--s5);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--bg-muted);
+  color: var(--fg);
+  padding: var(--s3) var(--s4);
+}
+
+.btn-secondary:hover {
+  background: var(--neutral-200);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.btn-icon.secondary {
+  background: var(--bg-muted);
+  color: var(--fg-muted);
+}
+
+.btn-icon.secondary:hover {
+  background: var(--neutral-200);
+  color: var(--fg);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

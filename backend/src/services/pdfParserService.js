@@ -1,4 +1,6 @@
-import pdfParse from 'pdf-parse';
+import * as pdfModule from 'pdf-parse';
+
+const pdfParse = pdfModule.default || pdfModule;
 
 /**
  * Parse PDF text to extract recipe structure

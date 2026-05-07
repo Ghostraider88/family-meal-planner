@@ -4,11 +4,10 @@ import { AuthContext } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
+import MealsPage from './pages/MealsPage';
 import RecipesPage from './pages/RecipesPage';
-import RecipeDetail from './pages/RecipeDetail';
-import MealPlanner from './pages/MealPlanner';
 import ShoppingPage from './pages/ShoppingPage';
-import FamilyPage from './pages/FamilyPage';
+import AppLayout from './layouts/AppLayout';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -22,16 +21,13 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" />} />
         </>
       ) : (
-        <>
-          <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/meals" element={<MealsPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/recipes/:id" element={<RecipeDetail />} />
-          <Route path="/week" element={<MealPlanner />} />
           <Route path="/shopping" element={<ShoppingPage />} />
-          <Route path="/family" element={<FamilyPage />} />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
-        </>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Route>
       )}
     </Routes>
   );

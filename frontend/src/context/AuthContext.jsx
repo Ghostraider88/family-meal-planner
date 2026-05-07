@@ -33,10 +33,15 @@ export const AuthProvider = ({ children }) => {
     }
     api.get('/users/me', { token, skipAuth: false })
       .then((data) => setUser(data))
-      .catch(() => {
-        // Token invalid — clear and stay on login screen
-        setStoredToken(null);
-        setToken(null);
+      .catch((err) => {
+        // Only clear token on auth failure (401), not on network errors
+        if (err.status === 401) {
+          setStoredToken(null);
+          setToken(null);
+        } else {
+          // Network or other error — keep the token and let user retry
+          console.warn('Failed to rehydrate user (non-auth error):', err.message);
+        }
       })
       .finally(() => setInitializing(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps

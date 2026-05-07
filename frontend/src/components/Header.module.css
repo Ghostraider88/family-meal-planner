@@ -11,12 +11,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-@media (min-width: 768px) {
-  .header {
-    width: 100%;
-    order: 1;
-  }
-}
 
 .left {
   display: flex;

@@ -7,13 +7,14 @@ export default function AppLayout() {
   return (
     <div className={styles.container}>
       <Header />
-      <Navigation />
-
-      <main className={styles.content}>
-        <div className={styles.contentWrapper}>
-          <Outlet />
-        </div>
-      </main>
+      <div className={styles.mainWrapper}>
+        <Navigation />
+        <main className={styles.content}>
+          <div className={styles.contentWrapper}>
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

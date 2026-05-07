@@ -11,28 +11,32 @@
 }
 
 .header h1 {
-  font-size: 26px;
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-display);
   margin: 0;
+  color: var(--fg);
 }
 
 .form {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  padding: var(--s4);
+  padding: var(--s5);
   display: flex;
-  gap: var(--s3);
+  gap: var(--s4);
+  box-shadow: var(--shadow-sm);
 }
 
 .formGroup {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--s2);
+  gap: var(--s3);
 }
 
 .form input {
-  padding: var(--s3) var(--s3);
+  padding: var(--s3) var(--s4);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 14px;
@@ -42,8 +46,8 @@
 
 .form input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-bg);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(56, 160, 94, 0.1);
 }
 
 .form button {
@@ -52,7 +56,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: var(--s6);
 }
 
@@ -65,39 +69,43 @@
 .listsSidebar {
   display: flex;
   flex-direction: column;
-  gap: var(--s3);
+  gap: var(--s4);
 }
 
 .listsSidebar h3 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-display);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--fg-muted);
 }
 
 .listsTabs {
   display: flex;
   flex-direction: column;
-  gap: var(--s2);
+  gap: var(--s3);
 }
 
 .listTab {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: var(--s3);
+  padding: var(--s3) var(--s4);
   text-align: left;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: var(--shadow-sm);
 }
 
 .listTab:hover {
-  background: var(--primary-bg);
+  background: var(--bg-subtle);
   border-color: var(--primary);
 }
 
@@ -105,16 +113,18 @@
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+  font-weight: 600;
 }
 
 .deleteListBtn {
   background: none;
   border: none;
   color: inherit;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   padding: 0;
   width: auto;
+  transition: all 0.2s;
 }
 
 .deleteListBtn:hover {
@@ -124,20 +134,21 @@
 .listContent {
   display: flex;
   flex-direction: column;
-  gap: var(--s4);
+  gap: var(--s5);
 }
 
 .addItemForm {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  padding: var(--s3);
+  padding: var(--s4);
   display: flex;
   gap: var(--s3);
+  box-shadow: var(--shadow-sm);
 }
 
 .addItemForm input {
-  padding: var(--s3);
+  padding: var(--s3) var(--s4);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   font-size: 14px;
@@ -147,13 +158,13 @@
 }
 
 .addItemForm input:last-of-type {
-  flex: 0 0 100px;
+  flex: 0 0 120px;
 }
 
 .addItemForm input:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-bg);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(56, 160, 94, 0.1);
 }
 
 .addBtn {
@@ -163,21 +174,26 @@
   border-radius: var(--r-md);
   padding: var(--s3);
   font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .addBtn:hover {
   background: var(--primary-dark);
   transform: scale(1.05);
+  box-shadow: var(--shadow-md);
 }
 
 .itemsList {
   display: flex;
   flex-direction: column;
-  gap: var(--s2);
+  gap: var(--s3);
 }
 
 .empty {
@@ -185,27 +201,30 @@
   color: var(--fg-muted);
   padding: var(--s6);
   background: var(--bg-card);
-  border: 1px dashed var(--border);
+  border: 2px dashed var(--border);
   border-radius: var(--r-lg);
+  font-weight: 500;
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: var(--s3);
+  gap: var(--s4);
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: var(--s3) var(--s4);
+  border-radius: var(--r-lg);
+  padding: var(--s4);
   transition: all 0.2s;
-}
-
-.item:hover {
   box-shadow: var(--shadow-sm);
 }
 
+.item:hover {
+  box-shadow: var(--shadow-md);
+}
+
 .item.checked {
-  opacity: 0.6;
+  opacity: 0.5;
+  background: var(--bg-subtle);
 }
 
 .item.checked .itemName {
@@ -214,39 +233,44 @@
 }
 
 .checkbox {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   accent-color: var(--primary);
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .itemInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--s1);
+  gap: var(--s2);
 }
 
 .itemName {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--fg);
 }
 
 .itemQuantity {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--fg-muted);
 }
 
 .deleteBtn {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   padding: var(--s2);
-  border-radius: var(--r-sm);
-  transition: background 0.2s;
+  border-radius: var(--r-md);
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .deleteBtn:hover {
   background: #fee2e2;
+  transform: scale(1.05);
 }

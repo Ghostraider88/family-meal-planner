@@ -1,17 +1,24 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import styles from './AuthPage.module.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, token } = useContext(AuthContext);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  // Redirect to dashboard after successful login (token is set in context)
+  useEffect(() => {
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +33,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password);
-      navigate('/');
+      // Don't navigate here; let the token context trigger the redirect via useEffect above
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
